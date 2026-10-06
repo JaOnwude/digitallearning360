@@ -1,0 +1,13 @@
+{
+  "name": "digitallearning360",
+  "private": true,
+  "packageManager": "pnpm@10.26.0",
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "build:web": "pnpm --filter web build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "api:openapi": "uv run --directory apps/api python -m app.scripts.export_openapi ../../packages/api-client/openapi.json",
+    "gen:client": "pnpm api:openapi && pnpm --filter @dl360/api-client generate"
+  }
+}

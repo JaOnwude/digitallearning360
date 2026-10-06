@@ -1,0 +1,23 @@
+{
+  "name": "@dl360/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "orval --config orval.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5",
+    "zod": "^4"
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5",
+    "orval": "^8.40.0",
+    "typescript": "^5",
+    "zod": "^4"
+  }
+}

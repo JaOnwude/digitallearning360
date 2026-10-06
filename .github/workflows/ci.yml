@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API (lint, types, tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pyright
+      # Tests start their own Postgres and Redis containers (testcontainers).
+      - run: uv run pytest -q
+
+  web:
+    name: Web (lint, types, build) + client drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: astral-sh/setup-uv@v6
+      - run: pnpm install --frozen-lockfile
+      - name: Generated API client is up to date
+        run: |
+          pnpm gen:client
+          git diff --exit-code -- packages/api-client || (echo "::error::Run 'pnpm gen:client' and commit the result." && exit 1)
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm build:web
+        env:
+          NEXT_PUBLIC_API_URL: https://api.example.invalid

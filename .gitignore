@@ -1,0 +1,29 @@
+# deps
+node_modules/
+.pnpm-store/
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+# builds
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+# env & secrets
+.env
+.env.*
+!.env.example
+# os/editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+# coverage
+coverage/
+.coverage
