@@ -16,6 +16,7 @@ from app.auth.schemas import NextStep
 from app.auth.sessions import SessionData, SessionKind
 from app.core import ratelimit
 from app.core.crypto import constant_time_equals, decrypt, encrypt, sha256_hex
+from app.core.http import client_ip
 from app.core.redis import get_redis
 from app.notifications.service import send_email
 from app.students.models import Enrollment, Guardian, Student
@@ -24,11 +25,6 @@ from app.tenancy.models import School
 INVALID_LOGIN = "Incorrect details. Check and try again."
 CODE_TTL_SECONDS = 600
 CODE_MAX_ATTEMPTS = 5
-
-
-def client_ip(request: Request) -> str:
-    fwd = request.headers.get("x-forwarded-for")
-    return fwd.split(",")[0].strip() if fwd else (request.client.host if request.client else "?")
 
 
 def next_step(data: SessionData, user: User) -> NextStep:
