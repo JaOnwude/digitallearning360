@@ -12,6 +12,10 @@ from app.core.logging import configure_logging
 from app.core.redis import close_redis
 from app.db.session import dispose_engine
 from app.health.router import router as health_router
+from app.reports.router import router as reports_router
+from app.results.router_entry import router as results_entry_router
+from app.results.router_setup import router as results_setup_router
+from app.results.router_workflow import router as results_workflow_router
 from app.staff.router import router as staff_router
 from app.students.router import router as students_router
 from app.tenancy.router import router as school_router
@@ -52,6 +56,10 @@ def create_app() -> FastAPI:
     app.include_router(setup_router)
     app.include_router(staff_router)
     app.include_router(students_router)
+    app.include_router(results_setup_router)
+    app.include_router(results_entry_router)
+    app.include_router(results_workflow_router)
+    app.include_router(reports_router)
     return app
 
 

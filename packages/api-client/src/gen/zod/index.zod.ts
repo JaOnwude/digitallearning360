@@ -1,5 +1,7 @@
 export * from './auth/auth.zod';
 export * from './health/health.zod';
+export * from './reports/reports.zod';
+export * from './results/results.zod';
 export * from './school/school.zod';
 export * from './setup/setup.zod';
 export * from './staff/staff.zod';

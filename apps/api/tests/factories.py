@@ -14,6 +14,8 @@ from app.academics.models import (
     ClassLevel,
     Section,
     SectionKind,
+    Subject,
+    Term,
 )
 from app.auth.models import Membership, Role, User
 from app.auth.passwords import hash_password
@@ -140,3 +142,88 @@ async def make_student(
                 StudentGuardian(school_id=school.id, student_id=student.id, guardian_id=guardian.id)
             )
     return student
+
+
+# ---------------------------------------------------------------- results (M2)
+
+
+@dataclass
+class ResultsWorld:
+    school: School
+    structure: Structure
+    term: Term
+    subjects: list[Subject]
+    students: list[Student]
+    enrollments: list[Enrollment]
+    component_ids: list[uuid.UUID]
+    slot_ids: dict[str, uuid.UUID]  # author role → slot id
+    trait_ids: list[uuid.UUID]
+
+
+async def make_results_world(n_students: int = 3, term_number: int = 1) -> ResultsWorld:
+    """A JSS1 A class configured like Progress JSS, with the current term set."""
+    from sqlalchemy import select
+
+    from app.academics.models import LevelSubject
+    from app.results import config as rconfig
+    from app.results.config import BandSpec, ComponentSpec
+    from app.results.models import AssessmentComponent, CommentAuthor, CommentSlot, Trait
+
+    school = await make_school()
+    st = await make_structure(school)
+    async with tenant_session(school) as db:
+        section = await db.get(Section, st.section.id)
+        assert section is not None
+        await rconfig.set_components(db, school.id, section, [
+            ComponentSpec("1st Assessment", "1st", 10), ComponentSpec("2nd Assessment", "2nd", 10),
+            ComponentSpec("Project", "Proj", 10), ComponentSpec("Examination", "Exam", 70),
+        ])  # fmt: skip
+        await rconfig.set_bands(db, school.id, section, [
+            BandSpec("A", "Distinction", 70, 100), BandSpec("B", "Excellent", 61, 69),
+            BandSpec("C", "Credit", 55, 60), BandSpec("P", "Pass", 40, 54), BandSpec("F", "Fail", 0, 39),
+        ])  # fmt: skip
+        await rconfig.set_comment_slots(db, school.id, section, [
+            ("Guidance Counsellor's Comment", CommentAuthor.COUNSELLOR),
+            ("Form Master's Comment", CommentAuthor.FORM_TEACHER),
+            ("Principal's Comment", CommentAuthor.SECTION_HEAD),
+        ])  # fmt: skip
+        await rconfig.set_traits(
+            db, school.id, section, [("A. Social Behaviour", ["Punctuality", "Neatness"])]
+        )
+        section.report_config = {"template": "ebonyi_jss", "header_lines": ["EBONYI STATE SCHOOL SYSTEM"],
+                                 "title": "Result Sheet", "show_positions": False}  # fmt: skip
+        terms = [
+            Term(school_id=school.id, academic_session_id=st.session.id, number=n,
+                 is_current=(n == term_number))
+            for n in (1, 2, 3)
+        ]  # fmt: skip
+        subjects = [Subject(school_id=school.id, name=n) for n in ("English", "Mathematics")]
+        db.add_all([*terms, *subjects])
+        await db.flush()
+        for i, s in enumerate(subjects):
+            db.add(
+                LevelSubject(
+                    school_id=school.id, class_level_id=st.level.id, subject_id=s.id, sort=i
+                )
+            )
+        components = list(
+            await db.scalars(select(AssessmentComponent).order_by(AssessmentComponent.sort))
+        )
+        slots = {s.author_role.value: s.id for s in await db.scalars(select(CommentSlot))}
+        traits = list(await db.scalars(select(Trait.id).order_by(Trait.sort)))
+        term = terms[term_number - 1]
+    students = [
+        await make_student(school, st, guardian_email=f"{unique('parent')}@example.com")
+        for _ in range(n_students)
+    ]
+    async with tenant_session(school) as db:
+        enrollments = [
+            e
+            for s in students
+            for e in await db.scalars(select(Enrollment).where(Enrollment.student_id == s.id))
+        ]
+    return ResultsWorld(
+        school=school, structure=st, term=term, subjects=subjects, students=students,
+        enrollments=enrollments, component_ids=[c.id for c in components],
+        slot_ids=slots, trait_ids=traits,
+    )  # fmt: skip

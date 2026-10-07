@@ -1,6 +1,96 @@
 {
   "components": {
     "schemas": {
+      "ArmAssignmentsOut": {
+        "properties": {
+          "arm_id": {
+            "format": "uuid",
+            "title": "Arm Id",
+            "type": "string"
+          },
+          "form_teacher_user_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Form Teacher User Id"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "section_id": {
+            "format": "uuid",
+            "title": "Section Id",
+            "type": "string"
+          },
+          "subjects": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectAssignmentOut"
+            },
+            "title": "Subjects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "arm_id",
+          "label",
+          "section_id",
+          "form_teacher_user_id",
+          "subjects"
+        ],
+        "title": "ArmAssignmentsOut",
+        "type": "object"
+      },
+      "ArmClassOut": {
+        "properties": {
+          "arm_id": {
+            "format": "uuid",
+            "title": "Arm Id",
+            "type": "string"
+          },
+          "arm_label": {
+            "title": "Arm Label",
+            "type": "string"
+          },
+          "can_approve": {
+            "title": "Can Approve",
+            "type": "boolean"
+          },
+          "is_form_teacher": {
+            "title": "Is Form Teacher",
+            "type": "boolean"
+          },
+          "section_id": {
+            "format": "uuid",
+            "title": "Section Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SheetStatus"
+          },
+          "student_count": {
+            "title": "Student Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "arm_id",
+          "arm_label",
+          "section_id",
+          "status",
+          "student_count",
+          "is_form_teacher",
+          "can_approve"
+        ],
+        "title": "ArmClassOut",
+        "type": "object"
+      },
       "ArmCreateIn": {
         "properties": {
           "class_level_id": {
@@ -54,6 +144,66 @@
         ],
         "title": "AssessmentMode",
         "type": "string"
+      },
+      "AssignmentsOut": {
+        "properties": {
+          "arms": {
+            "items": {
+              "$ref": "#/components/schemas/ArmAssignmentsOut"
+            },
+            "title": "Arms",
+            "type": "array"
+          },
+          "teachers": {
+            "items": {
+              "$ref": "#/components/schemas/PersonOut"
+            },
+            "title": "Teachers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "arms",
+          "teachers"
+        ],
+        "title": "AssignmentsOut",
+        "type": "object"
+      },
+      "BandIO": {
+        "properties": {
+          "descriptor": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Descriptor",
+            "type": "string"
+          },
+          "letter": {
+            "maxLength": 4,
+            "minLength": 1,
+            "title": "Letter",
+            "type": "string"
+          },
+          "max_score": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Max Score",
+            "type": "integer"
+          },
+          "min_score": {
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Min Score",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "letter",
+          "descriptor",
+          "min_score",
+          "max_score"
+        ],
+        "title": "BandIO",
+        "type": "object"
       },
       "Body_students_import_students": {
         "properties": {
@@ -123,6 +273,412 @@
           }
         },
         "title": "Branding",
+        "type": "object"
+      },
+      "BroadsheetCell": {
+        "properties": {
+          "grade": {
+            "title": "Grade",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "total": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total",
+            "type": "string"
+          }
+        },
+        "required": [
+          "total",
+          "grade",
+          "position"
+        ],
+        "title": "BroadsheetCell",
+        "type": "object"
+      },
+      "BroadsheetOut": {
+        "properties": {
+          "allowed_actions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Allowed Actions",
+            "type": "array"
+          },
+          "arm_label": {
+            "title": "Arm Label",
+            "type": "string"
+          },
+          "class_average": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Class Average",
+            "type": "string"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing",
+            "type": "array"
+          },
+          "number_in_class": {
+            "title": "Number In Class",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/BroadsheetRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "show_positions_on_cards": {
+            "title": "Show Positions On Cards",
+            "type": "boolean"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SheetStatus"
+          },
+          "subjects": {
+            "items": {
+              "$ref": "#/components/schemas/BroadsheetSubject"
+            },
+            "title": "Subjects",
+            "type": "array"
+          },
+          "term_label": {
+            "title": "Term Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "arm_label",
+          "term_label",
+          "status",
+          "show_positions_on_cards",
+          "subjects",
+          "rows",
+          "number_in_class",
+          "class_average",
+          "missing",
+          "allowed_actions"
+        ],
+        "title": "BroadsheetOut",
+        "type": "object"
+      },
+      "BroadsheetRow": {
+        "properties": {
+          "admission_no": {
+            "title": "Admission No",
+            "type": "string"
+          },
+          "average": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Average",
+            "type": "string"
+          },
+          "cells": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/BroadsheetCell"
+            },
+            "title": "Cells",
+            "type": "object"
+          },
+          "enrollment_id": {
+            "format": "uuid",
+            "title": "Enrollment Id",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "subjects_taken": {
+            "title": "Subjects Taken",
+            "type": "integer"
+          },
+          "total": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total",
+            "type": "string"
+          }
+        },
+        "required": [
+          "enrollment_id",
+          "full_name",
+          "admission_no",
+          "cells",
+          "total",
+          "subjects_taken",
+          "average",
+          "position"
+        ],
+        "title": "BroadsheetRow",
+        "type": "object"
+      },
+      "BroadsheetSubject": {
+        "properties": {
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "subject_id": {
+            "format": "uuid",
+            "title": "Subject Id",
+            "type": "string"
+          },
+          "teacher": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher"
+          }
+        },
+        "required": [
+          "subject_id",
+          "name",
+          "teacher",
+          "complete"
+        ],
+        "title": "BroadsheetSubject",
+        "type": "object"
+      },
+      "ChildResultsOut": {
+        "properties": {
+          "class_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Label"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/PublishedTermOut"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "student_id": {
+            "format": "uuid",
+            "title": "Student Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "student_id",
+          "full_name",
+          "class_label",
+          "results"
+        ],
+        "title": "ChildResultsOut",
+        "type": "object"
+      },
+      "CommentAuthor": {
+        "enum": [
+          "form_teacher",
+          "counsellor",
+          "section_head"
+        ],
+        "title": "CommentAuthor",
+        "type": "string"
+      },
+      "CommentIn": {
+        "properties": {
+          "enrollment_id": {
+            "format": "uuid",
+            "title": "Enrollment Id",
+            "type": "string"
+          },
+          "slot_id": {
+            "format": "uuid",
+            "title": "Slot Id",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 600,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "enrollment_id",
+          "slot_id",
+          "text"
+        ],
+        "title": "CommentIn",
+        "type": "object"
+      },
+      "CommentSlotIO": {
+        "properties": {
+          "author_role": {
+            "$ref": "#/components/schemas/CommentAuthor"
+          },
+          "label": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "author_role"
+        ],
+        "title": "CommentSlotIO",
+        "type": "object"
+      },
+      "CompletionIn": {
+        "properties": {
+          "arm_id": {
+            "format": "uuid",
+            "title": "Arm Id",
+            "type": "string"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "subject_id": {
+            "format": "uuid",
+            "title": "Subject Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "arm_id",
+          "subject_id",
+          "complete"
+        ],
+        "title": "CompletionIn",
+        "type": "object"
+      },
+      "ComponentIO": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "max_score": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Max Score",
+            "type": "integer"
+          },
+          "name": {
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "short_name": {
+            "maxLength": 12,
+            "minLength": 1,
+            "title": "Short Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "short_name",
+          "max_score"
+        ],
+        "title": "ComponentIO",
+        "type": "object"
+      },
+      "ComponentOut": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "max_score": {
+            "title": "Max Score",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "short_name": {
+            "title": "Short Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "short_name",
+          "max_score"
+        ],
+        "title": "ComponentOut",
+        "type": "object"
+      },
+      "FormTeacherIn": {
+        "properties": {
+          "arm_id": {
+            "format": "uuid",
+            "title": "Arm Id",
+            "type": "string"
+          },
+          "teacher_user_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher User Id"
+          }
+        },
+        "required": [
+          "arm_id",
+          "teacher_user_id"
+        ],
+        "title": "FormTeacherIn",
         "type": "object"
       },
       "Gender": {
@@ -580,6 +1136,35 @@
         "title": "MessageOut",
         "type": "object"
       },
+      "MyClassesOut": {
+        "properties": {
+          "arm_classes": {
+            "items": {
+              "$ref": "#/components/schemas/ArmClassOut"
+            },
+            "title": "Arm Classes",
+            "type": "array"
+          },
+          "subject_classes": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectClassOut"
+            },
+            "title": "Subject Classes",
+            "type": "array"
+          },
+          "term_label": {
+            "title": "Term Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "term_label",
+          "subject_classes",
+          "arm_classes"
+        ],
+        "title": "MyClassesOut",
+        "type": "object"
+      },
       "NextStep": {
         "description": "What the web app should show after a login step.",
         "enum": [
@@ -654,6 +1239,51 @@
         "title": "PasswordChangeIn",
         "type": "object"
       },
+      "PersonOut": {
+        "properties": {
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "user_id": {
+            "format": "uuid",
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "full_name"
+        ],
+        "title": "PersonOut",
+        "type": "object"
+      },
+      "PromotionIn": {
+        "properties": {
+          "enrollment_id": {
+            "format": "uuid",
+            "title": "Enrollment Id",
+            "type": "string"
+          },
+          "promoted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promoted"
+          }
+        },
+        "required": [
+          "enrollment_id",
+          "promoted"
+        ],
+        "title": "PromotionIn",
+        "type": "object"
+      },
       "PublicSchoolOut": {
         "description": "What anyone visiting the school's site may see (login page branding).",
         "properties": {
@@ -719,6 +1349,97 @@
         "title": "PublicSection",
         "type": "object"
       },
+      "PublishedTermOut": {
+        "properties": {
+          "average": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Average",
+            "type": "string"
+          },
+          "published_at": {
+            "format": "date-time",
+            "title": "Published At",
+            "type": "string"
+          },
+          "session": {
+            "title": "Session",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "term_label": {
+            "title": "Term Label",
+            "type": "string"
+          },
+          "withheld": {
+            "title": "Withheld",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "term_label",
+          "session",
+          "average",
+          "published_at",
+          "withheld"
+        ],
+        "title": "PublishedTermOut",
+        "type": "object"
+      },
+      "RatingIn": {
+        "properties": {
+          "trait_id": {
+            "format": "uuid",
+            "title": "Trait Id",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "trait_id"
+        ],
+        "title": "RatingIn",
+        "type": "object"
+      },
+      "RatingsIn": {
+        "properties": {
+          "enrollment_id": {
+            "format": "uuid",
+            "title": "Enrollment Id",
+            "type": "string"
+          },
+          "ratings": {
+            "items": {
+              "$ref": "#/components/schemas/RatingIn"
+            },
+            "maxItems": 100,
+            "title": "Ratings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "enrollment_id",
+          "ratings"
+        ],
+        "title": "RatingsIn",
+        "type": "object"
+      },
       "Readiness": {
         "properties": {
           "database": {
@@ -746,6 +1467,106 @@
         "title": "Readiness",
         "type": "object"
       },
+      "ReportConfigIO": {
+        "properties": {
+          "header_lines": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 3,
+            "title": "Header Lines",
+            "type": "array"
+          },
+          "show_positions": {
+            "default": false,
+            "title": "Show Positions",
+            "type": "boolean"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subtitle"
+          },
+          "template": {
+            "default": "standard",
+            "pattern": "^(standard|ebonyi_jss)$",
+            "title": "Template",
+            "type": "string"
+          },
+          "title": {
+            "default": "Termly Report",
+            "maxLength": 120,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "title": "ReportConfigIO",
+        "type": "object"
+      },
+      "ReportEntryOut": {
+        "properties": {
+          "arm_label": {
+            "title": "Arm Label",
+            "type": "string"
+          },
+          "can_decide_promotion": {
+            "title": "Can Decide Promotion",
+            "type": "boolean"
+          },
+          "can_rate": {
+            "title": "Can Rate",
+            "type": "boolean"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/SlotOut"
+            },
+            "title": "Slots",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SheetStatus"
+          },
+          "students": {
+            "items": {
+              "$ref": "#/components/schemas/StudentReportEntry"
+            },
+            "title": "Students",
+            "type": "array"
+          },
+          "term_number": {
+            "title": "Term Number",
+            "type": "integer"
+          },
+          "trait_groups": {
+            "items": {
+              "$ref": "#/components/schemas/TraitGroupOut"
+            },
+            "title": "Trait Groups",
+            "type": "array"
+          }
+        },
+        "required": [
+          "arm_label",
+          "term_number",
+          "status",
+          "can_rate",
+          "can_decide_promotion",
+          "trait_groups",
+          "slots",
+          "students"
+        ],
+        "title": "ReportEntryOut",
+        "type": "object"
+      },
       "Role": {
         "enum": [
           "school_admin",
@@ -758,6 +1579,187 @@
         ],
         "title": "Role",
         "type": "string"
+      },
+      "SavedOut": {
+        "properties": {
+          "saved": {
+            "title": "Saved",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "saved"
+        ],
+        "title": "SavedOut",
+        "type": "object"
+      },
+      "ScoreCellIn": {
+        "properties": {
+          "component_id": {
+            "format": "uuid",
+            "title": "Component Id",
+            "type": "string"
+          },
+          "enrollment_id": {
+            "format": "uuid",
+            "title": "Enrollment Id",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,2}0*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "enrollment_id",
+          "component_id"
+        ],
+        "title": "ScoreCellIn",
+        "type": "object"
+      },
+      "ScoreRow": {
+        "properties": {
+          "admission_no": {
+            "title": "Admission No",
+            "type": "string"
+          },
+          "enrollment_id": {
+            "format": "uuid",
+            "title": "Enrollment Id",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Values",
+            "type": "object"
+          }
+        },
+        "required": [
+          "enrollment_id",
+          "admission_no",
+          "full_name",
+          "values"
+        ],
+        "title": "ScoreRow",
+        "type": "object"
+      },
+      "ScoreSheetOut": {
+        "properties": {
+          "arm_label": {
+            "title": "Arm Label",
+            "type": "string"
+          },
+          "bands": {
+            "items": {
+              "$ref": "#/components/schemas/BandIO"
+            },
+            "title": "Bands",
+            "type": "array"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentOut"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "editable": {
+            "title": "Editable",
+            "type": "boolean"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SheetStatus"
+          },
+          "subject_name": {
+            "title": "Subject Name",
+            "type": "string"
+          },
+          "term_label": {
+            "title": "Term Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "arm_label",
+          "subject_name",
+          "term_label",
+          "status",
+          "editable",
+          "complete",
+          "components",
+          "bands",
+          "rows"
+        ],
+        "title": "ScoreSheetOut",
+        "type": "object"
+      },
+      "ScoresIn": {
+        "properties": {
+          "arm_id": {
+            "format": "uuid",
+            "title": "Arm Id",
+            "type": "string"
+          },
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreCellIn"
+            },
+            "maxItems": 2000,
+            "minItems": 1,
+            "title": "Cells",
+            "type": "array"
+          },
+          "subject_id": {
+            "format": "uuid",
+            "title": "Subject Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "arm_id",
+          "subject_id",
+          "cells"
+        ],
+        "title": "ScoresIn",
+        "type": "object"
       },
       "SectionKind": {
         "enum": [
@@ -814,6 +1816,61 @@
           "levels"
         ],
         "title": "SectionOut",
+        "type": "object"
+      },
+      "SectionResultsConfigOut": {
+        "properties": {
+          "bands": {
+            "items": {
+              "$ref": "#/components/schemas/BandIO"
+            },
+            "title": "Bands",
+            "type": "array"
+          },
+          "comment_slots": {
+            "items": {
+              "$ref": "#/components/schemas/CommentSlotIO"
+            },
+            "title": "Comment Slots",
+            "type": "array"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ComponentIO"
+            },
+            "title": "Components",
+            "type": "array"
+          },
+          "report": {
+            "$ref": "#/components/schemas/ReportConfigIO"
+          },
+          "section_id": {
+            "format": "uuid",
+            "title": "Section Id",
+            "type": "string"
+          },
+          "section_name": {
+            "title": "Section Name",
+            "type": "string"
+          },
+          "trait_groups": {
+            "items": {
+              "$ref": "#/components/schemas/TraitGroupIO"
+            },
+            "title": "Trait Groups",
+            "type": "array"
+          }
+        },
+        "required": [
+          "section_id",
+          "section_name",
+          "components",
+          "bands",
+          "trait_groups",
+          "comment_slots",
+          "report"
+        ],
+        "title": "SectionResultsConfigOut",
         "type": "object"
       },
       "SectionUpdateIn": {
@@ -951,6 +2008,89 @@
           "subjects"
         ],
         "title": "SetupOverviewOut",
+        "type": "object"
+      },
+      "SheetStateOut": {
+        "properties": {
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SheetStatus"
+          }
+        },
+        "required": [
+          "status",
+          "published_at"
+        ],
+        "title": "SheetStateOut",
+        "type": "object"
+      },
+      "SheetStatus": {
+        "enum": [
+          "draft",
+          "submitted",
+          "approved",
+          "published"
+        ],
+        "title": "SheetStatus",
+        "type": "string"
+      },
+      "SlotOut": {
+        "properties": {
+          "author_role": {
+            "$ref": "#/components/schemas/CommentAuthor"
+          },
+          "editable": {
+            "title": "Editable",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "author_role",
+          "editable"
+        ],
+        "title": "SlotOut",
+        "type": "object"
+      },
+      "SnapshotOut": {
+        "properties": {
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "title": "Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "data"
+        ],
+        "title": "SnapshotOut",
         "type": "object"
       },
       "StaffCreateIn": {
@@ -1402,6 +2542,58 @@
         "title": "StudentPage",
         "type": "object"
       },
+      "StudentReportEntry": {
+        "properties": {
+          "admission_no": {
+            "title": "Admission No",
+            "type": "string"
+          },
+          "comments": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Comments",
+            "type": "object"
+          },
+          "enrollment_id": {
+            "format": "uuid",
+            "title": "Enrollment Id",
+            "type": "string"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string"
+          },
+          "promoted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Promoted"
+          },
+          "ratings": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Ratings",
+            "type": "object"
+          }
+        },
+        "required": [
+          "enrollment_id",
+          "full_name",
+          "admission_no",
+          "ratings",
+          "comments",
+          "promoted"
+        ],
+        "title": "StudentReportEntry",
+        "type": "object"
+      },
       "StudentRow": {
         "properties": {
           "admission_no": {
@@ -1604,6 +2796,77 @@
         "title": "StudentUpdateIn",
         "type": "object"
       },
+      "SubjectAssignmentOut": {
+        "properties": {
+          "subject_id": {
+            "format": "uuid",
+            "title": "Subject Id",
+            "type": "string"
+          },
+          "subject_name": {
+            "title": "Subject Name",
+            "type": "string"
+          },
+          "teacher_user_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher User Id"
+          }
+        },
+        "required": [
+          "subject_id",
+          "subject_name",
+          "teacher_user_id"
+        ],
+        "title": "SubjectAssignmentOut",
+        "type": "object"
+      },
+      "SubjectClassOut": {
+        "properties": {
+          "arm_id": {
+            "format": "uuid",
+            "title": "Arm Id",
+            "type": "string"
+          },
+          "arm_label": {
+            "title": "Arm Label",
+            "type": "string"
+          },
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SheetStatus"
+          },
+          "subject_id": {
+            "format": "uuid",
+            "title": "Subject Id",
+            "type": "string"
+          },
+          "subject_name": {
+            "title": "Subject Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "arm_id",
+          "arm_label",
+          "subject_id",
+          "subject_name",
+          "complete",
+          "status"
+        ],
+        "title": "SubjectClassOut",
+        "type": "object"
+      },
       "SubjectIn": {
         "properties": {
           "code": {
@@ -1669,6 +2932,39 @@
           "code"
         ],
         "title": "SubjectOut",
+        "type": "object"
+      },
+      "SubjectTeacherIn": {
+        "properties": {
+          "arm_id": {
+            "format": "uuid",
+            "title": "Arm Id",
+            "type": "string"
+          },
+          "subject_id": {
+            "format": "uuid",
+            "title": "Subject Id",
+            "type": "string"
+          },
+          "teacher_user_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Teacher User Id"
+          }
+        },
+        "required": [
+          "arm_id",
+          "subject_id",
+          "teacher_user_id"
+        ],
+        "title": "SubjectTeacherIn",
         "type": "object"
       },
       "TermOut": {
@@ -1835,6 +3131,85 @@
         "title": "TotpVerifyOut",
         "type": "object"
       },
+      "TraitGroupIO": {
+        "properties": {
+          "name": {
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "traits": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 40,
+            "title": "Traits",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "traits"
+        ],
+        "title": "TraitGroupIO",
+        "type": "object"
+      },
+      "TraitGroupOut": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "traits": {
+            "items": {
+              "$ref": "#/components/schemas/TraitOut"
+            },
+            "title": "Traits",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "traits"
+        ],
+        "title": "TraitGroupOut",
+        "type": "object"
+      },
+      "TraitOut": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "TraitOut",
+        "type": "object"
+      },
+      "UnpublishIn": {
+        "properties": {
+          "reason": {
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "UnpublishIn",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -1873,6 +3248,69 @@
           "type"
         ],
         "title": "ValidationError",
+        "type": "object"
+      },
+      "VerifyOut": {
+        "properties": {
+          "class_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Label"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "school": {
+            "title": "School",
+            "type": "string"
+          },
+          "student": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Student"
+          },
+          "term_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Term Label"
+          },
+          "valid": {
+            "title": "Valid",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "valid",
+          "school"
+        ],
+        "title": "VerifyOut",
         "type": "object"
       }
     }
@@ -2185,6 +3623,89 @@
         ]
       }
     },
+    "/api/portal/results": {
+      "get": {
+        "description": "A parent's children (or a student themself) with their published results.",
+        "operationId": "reports_portal_results",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChildResultsOut"
+                  },
+                  "title": "Response Reports Portal Results",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Portal Results",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/portal/snapshots/{snapshot_id}": {
+      "get": {
+        "operationId": "reports_portal_snapshot",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Portal Snapshot",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/public/logo": {
+      "get": {
+        "operationId": "reports_logo",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Logo",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
     "/api/public/school": {
       "get": {
         "operationId": "school_public_school",
@@ -2203,6 +3724,1169 @@
         "summary": "Public School",
         "tags": [
           "school"
+        ]
+      }
+    },
+    "/api/public/verify/{snapshot_id}": {
+      "get": {
+        "description": "Anyone holding a printed card can check it's genuine. Shows only what's on the card.",
+        "operationId": "reports_verify",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "h",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "minLength": 8,
+              "title": "H",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Verify",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/reports/arm/{arm_id}.pdf": {
+      "get": {
+        "description": "Every current card for a class, one page each, ready to print.",
+        "operationId": "reports_arm_reports_pdf",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "arm_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Arm Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "term_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Term Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Arm Reports Pdf",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/reports/{snapshot_id}.pdf": {
+      "get": {
+        "operationId": "reports_report_pdf",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Report Pdf",
+        "tags": [
+          "reports"
+        ]
+      }
+    },
+    "/api/results/assignments": {
+      "get": {
+        "operationId": "results_get_assignments",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Assignments",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/assignments/form-teacher": {
+      "put": {
+        "operationId": "results_set_form_teacher",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormTeacherIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Form Teacher",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/assignments/subject": {
+      "put": {
+        "operationId": "results_set_subject_teacher",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubjectTeacherIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssignmentsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Subject Teacher",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/broadsheet": {
+      "get": {
+        "operationId": "results_broadsheet",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "arm_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Arm Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BroadsheetOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Broadsheet",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/comments": {
+      "put": {
+        "operationId": "results_save_comment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Comment",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/completion": {
+      "put": {
+        "operationId": "results_set_completion",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompletionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Completion",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/config/{section_id}": {
+      "get": {
+        "operationId": "results_get_config",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "section_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Section Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionResultsConfigOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Config",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/config/{section_id}/bands": {
+      "put": {
+        "operationId": "results_put_bands",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "section_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Section Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/BandIO"
+                },
+                "title": "Body",
+                "type": "array"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionResultsConfigOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Bands",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/config/{section_id}/comment-slots": {
+      "put": {
+        "operationId": "results_put_comment_slots",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "section_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Section Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/CommentSlotIO"
+                },
+                "title": "Body",
+                "type": "array"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionResultsConfigOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Comment Slots",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/config/{section_id}/components": {
+      "put": {
+        "operationId": "results_put_components",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "section_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Section Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/ComponentIO"
+                },
+                "title": "Body",
+                "type": "array"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionResultsConfigOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Components",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/config/{section_id}/report": {
+      "put": {
+        "operationId": "results_put_report_config",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "section_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Section Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportConfigIO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionResultsConfigOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Report Config",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/config/{section_id}/traits": {
+      "put": {
+        "operationId": "results_put_traits",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "section_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Section Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/TraitGroupIO"
+                },
+                "title": "Body",
+                "type": "array"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionResultsConfigOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Traits",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/my-classes": {
+      "get": {
+        "description": "Everything the signed-in staff member works on this term.",
+        "operationId": "results_my_classes",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyClassesOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "My Classes",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/promotion": {
+      "put": {
+        "operationId": "results_save_promotion",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromotionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Promotion",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/ratings": {
+      "put": {
+        "operationId": "results_save_ratings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RatingsIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Ratings",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/report-entry": {
+      "get": {
+        "operationId": "results_report_entry",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "arm_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Arm Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportEntryOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Report Entry",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/scores": {
+      "get": {
+        "operationId": "results_get_scores",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "arm_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Arm Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "subject_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Subject Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScoreSheetOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Scores",
+        "tags": [
+          "results"
+        ]
+      },
+      "put": {
+        "description": "Batch upsert (autosave). A null value clears the cell.",
+        "operationId": "results_save_scores",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScoresIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SavedOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Save Scores",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/sheets/{arm_id}/approve": {
+      "post": {
+        "operationId": "results_approve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "arm_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Arm Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SheetStateOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Approve",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/sheets/{arm_id}/publish": {
+      "post": {
+        "operationId": "results_publish",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "arm_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Arm Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SheetStateOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Publish",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/sheets/{arm_id}/return": {
+      "post": {
+        "operationId": "results_return_for_corrections",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "arm_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Arm Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SheetStateOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Return For Corrections",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/sheets/{arm_id}/submit": {
+      "post": {
+        "operationId": "results_submit",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "arm_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Arm Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SheetStateOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Submit",
+        "tags": [
+          "results"
+        ]
+      }
+    },
+    "/api/results/sheets/{arm_id}/unpublish": {
+      "post": {
+        "description": "Admin override: reopens published results for correction. The reason is audited.",
+        "operationId": "results_unpublish",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "arm_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Arm Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnpublishIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SheetStateOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Unpublish",
+        "tags": [
+          "results"
         ]
       }
     },
