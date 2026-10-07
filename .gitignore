@@ -28,3 +28,4 @@ Thumbs.db
 coverage/
 .coverage
 .local-test-accounts.md
+.local-staging-secrets.md

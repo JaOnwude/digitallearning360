@@ -1,0 +1,54 @@
+# Render Blueprint: the API, its Postgres and Redis (staging).
+# Render reads this file when the repo is connected via "New → Blueprint".
+# Secrets marked `sync: false` are entered in the Render dashboard, never committed.
+# Free plans are fine for staging; see docs/deploy-staging.md before going live.
+
+services:
+  - type: web
+    name: dl360-api
+    runtime: docker
+    rootDir: apps/api
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt # closest Render region to Nigeria
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: DL360_ENV
+        value: staging
+      - key: DL360_DATABASE_URL
+        fromDatabase:
+          name: dl360-db
+          property: connectionString
+      - key: DL360_REDIS_URL
+        fromService:
+          type: keyvalue
+          name: dl360-redis
+          property: connectionString
+      # Must match the web app's DL360_BASE_DOMAIN. Until the real domain is bought, the
+      # staging URL (vercel.app) falls back to the default school.
+      - key: DL360_BASE_DOMAIN
+        value: digitallearning360.invalid
+      - key: DL360_DEFAULT_SCHOOL_SLUG
+        value: progress
+      - key: DL360_PROXY_KEY # same value as on Vercel
+        sync: false
+      - key: DL360_ENCRYPTION_KEY # 32 random bytes, base64url
+        sync: false
+      - key: DL360_RESEND_API_KEY # optional until parents sign in on staging
+        sync: false
+      - key: DL360_SENTRY_DSN
+        sync: false
+
+  - type: keyvalue
+    name: dl360-redis
+    plan: free
+    region: frankfurt
+    maxmemoryPolicy: noeviction # sessions and rate limits must not be silently dropped
+    ipAllowList: [] # internal connections only
+
+databases:
+  - name: dl360-db
+    plan: free
+    region: frankfurt
+    databaseName: dl360
