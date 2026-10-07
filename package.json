@@ -3,6 +3,8 @@
   "private": true,
   "packageManager": "pnpm@10.26.0",
   "scripts": {
+    "dev": "concurrently -k -n api,web -c yellow,cyan \"pnpm dev:api\" \"pnpm dev:web\"",
+    "dev:api": "cd apps/api && uv run uvicorn app.main:app --reload --reload-dir app --port 8360",
     "dev:web": "pnpm --filter web dev",
     "build:web": "pnpm --filter web build",
     "lint": "pnpm -r lint",
@@ -13,5 +15,8 @@
     "check:client": "node scripts/check-client.mjs",
     "check": "pnpm check:api && pnpm check:client && pnpm typecheck && pnpm lint",
     "prepare": "git config core.hooksPath .githooks || true"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
   }
 }

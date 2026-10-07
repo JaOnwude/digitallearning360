@@ -22,9 +22,10 @@ cd apps/api && uv sync && uv run alembic upgrade head
 
 ## Day to day
 ```bash
-cd apps/api && uv run uvicorn app.main:app --reload --reload-dir app --port 8360  # docs: http://localhost:8360/docs
-pnpm dev:web                                                # http://progress.digitallearning360.localhost:3360
+docker compose -f infra/docker-compose.yml up -d   # once per PC restart
+pnpm dev        # API (yellow) + website (cyan) together; Ctrl+C stops both
 ```
+Then open http://progress.digitallearning360.localhost:3360 (API docs: http://localhost:8360/docs).
 
 ## Checks
 ```bash

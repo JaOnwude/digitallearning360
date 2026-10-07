@@ -25,8 +25,7 @@ case in `tests/tenancy/test_isolation_sweep.py` (the test fails if a route is mi
 ## Commands
 ```bash
 docker compose -f infra/docker-compose.yml up -d     # start Postgres + Redis
-cd apps/api && uv run uvicorn app.main:app --reload --reload-dir app --port 8360
-pnpm dev:web                                         # http://digitallearning360.localhost:3360
+pnpm dev                                             # API + web together (or dev:api / dev:web)
 pnpm gen:client                                      # API changed → regenerate client
 pnpm check                                           # everything CI would run (also runs on git push)
 cd apps/api && uv run alembic revision --autogenerate -m "..." && uv run alembic upgrade head
