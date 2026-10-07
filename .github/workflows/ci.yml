@@ -51,4 +51,4 @@ jobs:
       - run: pnpm lint
       - run: pnpm build:web
         env:
-          NEXT_PUBLIC_API_URL: https://api.example.invalid
+          DL360_API_INTERNAL_URL: https://api.example.invalid

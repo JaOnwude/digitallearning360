@@ -11,6 +11,7 @@ from app.core.logging import configure_logging
 from app.core.redis import close_redis
 from app.db.session import dispose_engine
 from app.health.router import router as health_router
+from app.tenancy.router import router as school_router
 
 
 def _operation_id(route: APIRoute) -> str:
@@ -44,6 +45,7 @@ def create_app() -> FastAPI:
     )
     app.include_router(health_router)
     app.include_router(auth_router)
+    app.include_router(school_router)
     return app
 
 

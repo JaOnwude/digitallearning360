@@ -27,3 +27,4 @@ Thumbs.db
 # coverage
 coverage/
 .coverage
+.local-test-accounts.md

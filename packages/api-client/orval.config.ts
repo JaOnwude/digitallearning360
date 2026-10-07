@@ -14,7 +14,10 @@ export default defineConfig({
       clean: true,
       override: {
         mutator: { path: "./src/fetcher.ts", name: "apiFetch" },
-        query: { useQuery: true, useSuspenseQuery: true },
+        // GET → useQuery + useSuspenseQuery hooks; POST/PUT/PATCH/DELETE → useMutation hooks.
+        query: { useSuspenseQuery: true },
+        // apiFetch throws ApiError on any non-2xx, so results are always the success shape.
+        fetch: { forceSuccessResponse: true },
       },
     },
   },

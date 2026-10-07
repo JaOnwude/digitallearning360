@@ -1,6 +1,56 @@
 {
   "components": {
     "schemas": {
+      "Branding": {
+        "properties": {
+          "accent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accent"
+          },
+          "ink": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ink"
+          },
+          "logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Url"
+          },
+          "primary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary"
+          }
+        },
+        "title": "Branding",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -172,6 +222,71 @@
         "title": "PasswordChangeIn",
         "type": "object"
       },
+      "PublicSchoolOut": {
+        "description": "What anyone visiting the school's site may see (login page branding).",
+        "properties": {
+          "branding": {
+            "$ref": "#/components/schemas/Branding"
+          },
+          "motto": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Motto"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/PublicSection"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug",
+          "name",
+          "motto",
+          "branding",
+          "sections"
+        ],
+        "title": "PublicSchoolOut",
+        "type": "object"
+      },
+      "PublicSection": {
+        "properties": {
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SectionKind"
+          },
+          "student_login_enabled": {
+            "title": "Student Login Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "display_name",
+          "kind",
+          "student_login_enabled"
+        ],
+        "title": "PublicSection",
+        "type": "object"
+      },
       "Readiness": {
         "properties": {
           "database": {
@@ -210,6 +325,18 @@
           "student"
         ],
         "title": "Role",
+        "type": "string"
+      },
+      "SectionKind": {
+        "enum": [
+          "creche",
+          "nursery",
+          "primary",
+          "junior_secondary",
+          "senior_secondary",
+          "other"
+        ],
+        "title": "SectionKind",
         "type": "string"
       },
       "SessionKind": {
@@ -670,6 +797,27 @@
         "summary": "Totp Verify",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/api/public/school": {
+      "get": {
+        "operationId": "school_public_school",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSchoolOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Public School",
+        "tags": [
+          "school"
         ]
       }
     },

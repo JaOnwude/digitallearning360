@@ -1,0 +1,22 @@
+# A second school for checking isolation by hand. Not a real school.
+[school]
+slug = "demo"
+name = "Demo Model College"
+motto = "Testing, testing"
+
+[school.branding]
+primary = "#2563EB"
+ink = "#1D4ED8"
+
+[[sections]]
+name = "Primary"
+display_name = "Demo Model Primary School"
+kind = "primary"
+student_login_enabled = false
+levels = ["Primary 1", "Primary 2"]
+arms = ["Gold"]
+subjects = ["English", "Mathematics"]
+
+[academic_session]
+name = "2026/2027"
+current_term = 1

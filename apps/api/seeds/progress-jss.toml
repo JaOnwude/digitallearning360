@@ -1,0 +1,35 @@
+# Progress Junior Secondary School, Abakaliki: pilot school (spec: Pilot school profile).
+# Re-running the seed is safe: existing records are matched and left in place.
+
+[school]
+slug = "progress"
+name = "Progress Junior Secondary School"
+motto = "Education for a Better Tomorrow"
+address = "Abakaliki, Ebonyi State"
+
+[school.branding]
+primary = "#F5B50A"   # gold
+accent = "#D9261C"    # flame red, used sparingly
+ink = "#5C4A12"       # deep olive: brand text on light backgrounds (gold fails contrast)
+logo_url = "/schools/progress/logo.jpg"
+
+[school.settings]
+document_header = "Ebonyi State School System"
+platform_fee_per_student_kobo = 5000000   # ₦50,000 placeholder; negotiated per school
+
+[[sections]]
+name = "Junior Secondary"
+display_name = "Progress Junior Secondary School"
+kind = "junior_secondary"
+student_login_enabled = true
+levels = ["JSS1", "JSS2", "JSS3"]
+arms = ["A", "B"]   # placeholder until the school confirms its arms
+subjects = [
+  "English", "Mathematics", "Digital Technologies", "History", "Intermediate Science",
+  "Physical & Health Education", "Social & Citizenship Studies", "Igbo Language",
+  "Cultural & Creative Arts", "Christian Religious Studies", "Business Studies", "French",
+]
+
+[academic_session]
+name = "2026/2027"
+current_term = 1

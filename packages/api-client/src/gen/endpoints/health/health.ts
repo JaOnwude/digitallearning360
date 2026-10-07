@@ -60,8 +60,6 @@ export type healthLivenessResponseSuccess = (healthLivenessResponse200) & {
 };
 ;
 
-export type healthLivenessResponse = (healthLivenessResponseSuccess)
-
 export const getHealthLivenessUrl = () => {
 
 
@@ -74,9 +72,9 @@ export const getHealthLivenessUrl = () => {
  * The process is up. Used by the uptime monitor.
  * @summary Liveness
  */
-export const healthLiveness = async ( options?: Parameters<typeof apiFetch>[1]): Promise<healthLivenessResponse> => {
+export const healthLiveness = async ( options?: Parameters<typeof apiFetch>[1]): Promise<healthLivenessResponseSuccess> => {
 
-  return apiFetch<healthLivenessResponse>(getHealthLivenessUrl(),
+  return apiFetch<healthLivenessResponseSuccess>(getHealthLivenessUrl(),
   {
     ...options,
     method: 'GET'
@@ -228,8 +226,6 @@ export type healthReadinessResponseSuccess = (healthReadinessResponse200) & {
 };
 ;
 
-export type healthReadinessResponse = (healthReadinessResponseSuccess)
-
 export const getHealthReadinessUrl = () => {
 
 
@@ -242,9 +238,9 @@ export const getHealthReadinessUrl = () => {
  * The API can reach its dependencies. Used by the load balancer.
  * @summary Readiness
  */
-export const healthReadiness = async ( options?: Parameters<typeof apiFetch>[1]): Promise<healthReadinessResponse> => {
+export const healthReadiness = async ( options?: Parameters<typeof apiFetch>[1]): Promise<healthReadinessResponseSuccess> => {
 
-  return apiFetch<healthReadinessResponse>(getHealthReadinessUrl(),
+  return apiFetch<healthReadinessResponseSuccess>(getHealthReadinessUrl(),
   {
     ...options,
     method: 'GET'
