@@ -7,11 +7,13 @@ name = "Progress Junior Secondary School"
 motto = "Education for a Better Tomorrow"
 address = "Abakaliki, Ebonyi State"
 
+logo_file = "../../../docs/pilot-school/progress-jss-logo.jpg"  # relative to this file
+
 [school.branding]
 primary = "#F5B50A"   # gold
 accent = "#D9261C"    # flame red, used sparingly
 ink = "#5C4A12"       # deep olive: brand text on light backgrounds (gold fails contrast)
-logo_url = "/schools/progress/logo.jpg"
+logo_url = "/api/public/logo"
 
 [school.settings]
 document_header = "Ebonyi State School System"
@@ -28,6 +30,42 @@ subjects = [
   "English", "Mathematics", "Digital Technologies", "History", "Intermediate Science",
   "Physical & Health Education", "Social & Citizenship Studies", "Igbo Language",
   "Cultural & Creative Arts", "Christian Religious Studies", "Business Studies", "French",
+]
+
+# From docs/pilot-school/result-template.pdf (spec: Pilot school profile).
+assessment_components = [
+  { name = "1st Assessment", short_name = "1st CA", max_score = 10 },
+  { name = "2nd Assessment", short_name = "2nd CA", max_score = 10 },
+  { name = "Project", short_name = "Project", max_score = 10 },
+  { name = "Examination", short_name = "Exam", max_score = 70 },
+]
+grading_bands = [
+  { letter = "A", descriptor = "Distinction", min_score = 70, max_score = 100 },
+  { letter = "B", descriptor = "Excellent", min_score = 61, max_score = 69 },
+  { letter = "C", descriptor = "Credit", min_score = 55, max_score = 60 },
+  { letter = "P", descriptor = "Pass", min_score = 40, max_score = 54 },
+  { letter = "F", descriptor = "Fail", min_score = 0, max_score = 39 },
+]
+comment_slots = [
+  { label = "Guidance Counsellor's Comment", author_role = "counsellor" },
+  { label = "Form Master's Comment on Character and Academics", author_role = "form_teacher" },
+  { label = "Principal's Comment", author_role = "section_head" },
+]
+report_config = { template = "ebonyi_jss", header_lines = ["EBONYI STATE SCHOOL SYSTEM"], title = "SECONDARY SCHOOL ASSESSMENT- RESULT SHEET", subtitle = "TERMLY REPORT", show_positions = false }
+
+[[sections.trait_groups]]
+name = "A. Social Behaviour"
+traits = [
+  "Punctuality", "Attendance to Class", "Attentiveness", "Initiative", "Perseverance",
+  "Carrying out Assignment", "Organizational Ability", "Neatness", "Politeness", "Honesty",
+  "Self-discipline", "Spirit of Cooperation", "Obedience", "Sense of Responsibility",
+]
+
+[[sections.trait_groups]]
+name = "B. Motor Skills"
+traits = [
+  "Handwriting", "Public Speaking", "Handling Tools", "Drawing", "Painting",
+  "Musical Skills", "Sports", "Gymnastics", "Sculptures",
 ]
 
 [academic_session]

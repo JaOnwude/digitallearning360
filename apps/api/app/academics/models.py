@@ -3,9 +3,11 @@
 import uuid
 from datetime import date
 from enum import StrEnum
+from typing import Any
 
 from sqlalchemy import Boolean, Date, ForeignKey, Index, SmallInteger, String, UniqueConstraint
 from sqlalchemy import text as sql_text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -44,6 +46,10 @@ class Section(Base, TenantMixin):
         ForeignKey("users.id", ondelete="SET NULL")
     )
     sort: Mapped[int] = mapped_column(SmallInteger, default=0)
+    # Report card settings: template key, header lines, title, show_positions (R17).
+    report_config: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, server_default=sql_text("'{}'::jsonb")
+    )
 
 
 class ClassLevel(Base, TenantMixin):
@@ -112,6 +118,10 @@ class Arm(Base, TenantMixin):
     class_level_id: Mapped[uuid.UUID]
     academic_session_id: Mapped[uuid.UUID]
     name: Mapped[str] = mapped_column(String(30))  # "A", "Gold", ...
+    # Rates traits, writes the form-master comment and submits the arm's results (R15).
+    form_teacher_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )
 
 
 class House(Base, TenantMixin):

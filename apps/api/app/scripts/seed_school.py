@@ -13,6 +13,7 @@ import argparse
 import asyncio
 import secrets
 import tomllib
+import uuid
 from itertools import pairwise
 from pathlib import Path
 from typing import Any
@@ -33,6 +34,9 @@ from app.academics.models import (
 from app.auth.models import Membership, Role, User
 from app.auth.passwords import hash_password
 from app.db.session import dispose_engine, get_sessionmaker
+from app.results import config as rconfig
+from app.results.config import BandSpec, ComponentSpec
+from app.results.models import AssessmentComponent, CommentAuthor
 from app.tenancy.deps import set_tenant
 from app.tenancy.models import School
 
@@ -48,7 +52,43 @@ async def _get_or_create[T](
     return row
 
 
-async def seed(config: dict[str, Any], admin_email: str | None, admin_name: str) -> None:
+async def _seed_results_config(
+    db: AsyncSession, school_id: uuid.UUID, section: Section, sec: dict[str, Any]
+) -> None:
+    """Score columns, grades, traits, comment slots and report settings for a section.
+
+    Uses the file's values when given; otherwise platform defaults, but only for a section
+    that has none yet (never overwrites what a school configured in Setup).
+    """
+    has_components = await db.scalar(
+        select(func.count())
+        .select_from(AssessmentComponent)
+        .where(AssessmentComponent.section_id == section.id)
+    )
+    if "assessment_components" in sec:
+        specs = [ComponentSpec(**c) for c in sec["assessment_components"]]
+        await rconfig.set_components(db, school_id, section, specs)
+    elif not has_components:
+        await rconfig.set_components(db, school_id, section, rconfig.DEFAULT_COMPONENTS)
+        await rconfig.set_bands(db, school_id, section, rconfig.default_bands(sec["kind"]))
+        await rconfig.set_comment_slots(db, school_id, section, rconfig.DEFAULT_SLOTS)
+    if "grading_bands" in sec:
+        await rconfig.set_bands(
+            db, school_id, section, [BandSpec(**b) for b in sec["grading_bands"]]
+        )
+    if "comment_slots" in sec:
+        slots = [(c["label"], CommentAuthor(c["author_role"])) for c in sec["comment_slots"]]
+        await rconfig.set_comment_slots(db, school_id, section, slots)
+    if "trait_groups" in sec:
+        groups = [(g["name"], list(g["traits"])) for g in sec["trait_groups"]]
+        await rconfig.set_traits(db, school_id, section, groups)
+    if "report_config" in sec:
+        section.report_config = dict(sec["report_config"])
+
+
+async def seed(
+    config: dict[str, Any], admin_email: str | None, admin_name: str, base_dir: Path
+) -> None:
     s = config["school"]
     async with get_sessionmaker()() as db, db.begin():
         school = await db.scalar(select(School).where(School.slug == s["slug"]))
@@ -60,6 +100,10 @@ async def seed(config: dict[str, Any], admin_email: str | None, admin_name: str)
         school.address = s.get("address")
         school.branding = s.get("branding", {})
         school.settings = s.get("settings", {})
+        if "logo_file" in s:
+            logo = (base_dir / s["logo_file"]).resolve()
+            school.logo = logo.read_bytes()
+            school.logo_content_type = "image/png" if logo.suffix == ".png" else "image/jpeg"
         await db.flush()
         await set_tenant(db, school)
         sid = school.id
@@ -100,6 +144,7 @@ async def seed(config: dict[str, Any], admin_email: str | None, admin_name: str)
                         subject_id=subjects[name].id,
                     )
             sec["_levels"] = levels
+            await _seed_results_config(db, sid, section, sec)
 
         acad = config["academic_session"]
         session = await _get_or_create(db, AcademicSession, {}, school_id=sid, name=acad["name"])
@@ -162,7 +207,7 @@ def main() -> None:
 
     async def run() -> None:
         try:
-            await seed(config, args.admin_email, args.admin_name)
+            await seed(config, args.admin_email, args.admin_name, args.config.parent)
         finally:
             await dispose_engine()
 

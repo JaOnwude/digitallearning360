@@ -1,6 +1,6 @@
 from typing import Any
 
-from sqlalchemy import Boolean, String, text
+from sqlalchemy import Boolean, LargeBinary, String, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -22,3 +22,6 @@ class School(Base, IdMixin, TimestampMixin):
     # e.g. {"platform_fee_per_student_kobo": 5000000, "document_header": "..."}
     settings: Mapped[dict[str, Any]] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
     is_active: Mapped[bool] = mapped_column(Boolean, server_default=text("true"))
+    # Crest, used by the web header and printed documents. Small (≤ 512 KB) so stored inline.
+    logo: Mapped[bytes | None] = mapped_column(LargeBinary, deferred=True)
+    logo_content_type: Mapped[str | None] = mapped_column(String(50))
