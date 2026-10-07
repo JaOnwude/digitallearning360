@@ -1,4 +1,6 @@
-# Render Blueprint: the API, its Postgres and Redis (staging).
+# Render Blueprint: the API and Redis (staging). Postgres is external (Neon free tier),
+# because a Render account may have only one free Postgres. To use a Render database
+# instead, paste its URL into DL360_DATABASE_URL.
 # Render reads this file when the repo is connected via "New → Blueprint".
 # Secrets marked `sync: false` are entered in the Render dashboard, never committed.
 # Free plans are fine for staging; see docs/deploy-staging.md before going live.
@@ -16,10 +18,8 @@ services:
     envVars:
       - key: DL360_ENV
         value: staging
-      - key: DL360_DATABASE_URL
-        fromDatabase:
-          name: dl360-db
-          property: connectionString
+      - key: DL360_DATABASE_URL # Neon connection string (Frankfurt), pasted in the dashboard
+        sync: false
       - key: DL360_REDIS_URL
         fromService:
           type: keyvalue
@@ -46,9 +46,3 @@ services:
     region: frankfurt
     maxmemoryPolicy: noeviction # sessions and rate limits must not be silently dropped
     ipAllowList: [] # internal connections only
-
-databases:
-  - name: dl360-db
-    plan: free
-    region: frankfurt
-    databaseName: dl360

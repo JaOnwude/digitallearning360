@@ -1,16 +1,36 @@
 from functools import lru_cache
 from typing import Literal
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 def _asyncpg_url(url: str) -> str:
-    """Hosts hand out `postgres://` / `postgresql://` URLs; SQLAlchemy async needs asyncpg."""
+    """Normalise a host-provided Postgres URL (Render, Neon, ...) for SQLAlchemy + asyncpg.
+
+    - `postgres://` / `postgresql://` → `postgresql+asyncpg://`
+    - libpq's `sslmode=require` → asyncpg's `ssl=require`
+    - libpq-only options asyncpg rejects (e.g. Neon's `channel_binding`) are dropped
+    """
     for prefix in ("postgres://", "postgresql://"):
         if url.startswith(prefix):
-            return "postgresql+asyncpg://" + url[len(prefix) :]
-    return url
+            url = "postgresql+asyncpg://" + url[len(prefix) :]
+            break
+    parts = urlsplit(url)
+    if not parts.query:
+        return url
+    params = []
+    for key, value in parse_qsl(parts.query, keep_blank_values=True):
+        if key == "sslmode":
+            if value != "disable":
+                params.append(("ssl", "require" if value in ("prefer", "allow") else value))
+        elif key not in _LIBPQ_ONLY:
+            params.append((key, value))
+    return urlunsplit(parts._replace(query=urlencode(params)))
+
+
+_LIBPQ_ONLY = frozenset({"channel_binding", "gssencmode", "target_session_attrs", "options"})
 
 
 class Settings(BaseSettings):

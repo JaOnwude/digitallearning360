@@ -8,13 +8,26 @@ accounts (both signed in with that GitHub account), and the file
 `.local-staging-secrets.md` from the project folder on Anthony's PC
 (it holds the two secret values; never paste them in chat or commit them).
 
-## 1. Render: API, database and Redis (≈10 min)
+## 0. Neon: the database (≈3 min)
+
+Render allows one free Postgres per account, so staging uses Neon's free tier.
+
+1. Sign up at <https://neon.tech> (GitHub sign-in is fine).
+2. **Create project** → name `digitallearning360`, Postgres **16**, region
+   **AWS Europe Central 1 (Frankfurt)**.
+3. On the project dashboard click **Connect** and copy the connection string
+   (starts with `postgresql://`, ends with `?sslmode=require...`). Keep it
+   private: it contains the database password.
+
+## 1. Render: API and Redis (≈10 min)
 
 1. Go to <https://dashboard.render.com> → **New** → **Blueprint**.
 2. Pick the repo **JaOnwude/digitallearning360**. Render finds `render.yaml`
-   and lists: `dl360-api` (web service), `dl360-db` (Postgres), `dl360-redis`
-   (Key Value). Leave the defaults.
+   and lists: `dl360-api` (web service) and `dl360-redis` (Key Value).
+   Leave the defaults. (If an earlier attempt failed, open that Blueprint and
+   click **Manual sync** instead of creating a new one.)
 3. It asks for the values marked secret:
+   - `DL360_DATABASE_URL` → the Neon connection string from step 0
    - `DL360_PROXY_KEY` → copy from `.local-staging-secrets.md`
    - `DL360_ENCRYPTION_KEY` → copy from `.local-staging-secrets.md`
    - `DL360_RESEND_API_KEY`, `DL360_SENTRY_DSN` → leave empty for now
@@ -43,10 +56,10 @@ accounts (both signed in with that GitHub account), and the file
 The free Render plan has no command shell, so the school is created from
 Anthony's PC against the staging database:
 
-1. In Render → `dl360-db` → **Connect** → copy the **External Database URL**.
+1. Use the same Neon connection string.
 2. Save it, on Anthony's PC only, in `apps/api/.env.staging` (git-ignored) as:
    ```
-   DL360_DATABASE_URL=<external URL>?ssl=require
+   DL360_DATABASE_URL=<Neon connection string>
    DL360_ENV=staging
    DL360_PROXY_KEY=<same proxy key>
    DL360_ENCRYPTION_KEY=<same encryption key>
@@ -61,8 +74,9 @@ Anthony's PC against the staging database:
 
 ## Going live (before M4)
 
-- Render: upgrade `dl360-api` (no sleep after 15 min idle) and `dl360-db`
-  (free Postgres expires; paid has backups). Keep Key Value on a paid plan too.
+- Render: upgrade `dl360-api` (no sleep after 15 min idle) and Key Value.
+- Database: move to a paid plan with point-in-time recovery (Neon paid, or a
+  paid Render Postgres) and test a restore (spec AC12).
 - Vercel: Hobby is non-commercial only → move to Pro for a paying school.
 - Buy the domain, add `*.yourdomain` to Vercel, set `DL360_BASE_DOMAIN` on both
   sides, and remove `DL360_DEFAULT_SCHOOL_SLUG`.
