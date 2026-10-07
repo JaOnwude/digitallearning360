@@ -26,8 +26,8 @@ cd apps/api && uv run fastapi dev app/main.py --port 8360   # API docs: http://l
 pnpm dev:web                                                # http://progress.digitallearning360.localhost:3360
 ```
 
-## Checks (same as CI)
+## Checks
 ```bash
-cd apps/api && uv run ruff check . && uv run pyright && uv run pytest -q
-pnpm gen:client && pnpm typecheck && pnpm lint
+pnpm check   # lint, types, tests, generated-client drift; also runs automatically on git push
 ```
+GitHub Actions CI is currently manual-only (see `.github/workflows/ci.yml`).

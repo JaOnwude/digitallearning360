@@ -20,8 +20,7 @@ docker compose -f infra/docker-compose.yml up -d     # start Postgres + Redis
 cd apps/api && uv run fastapi dev app/main.py --port 8360
 pnpm dev:web                                         # http://digitallearning360.localhost:3360
 pnpm gen:client                                      # API changed → regenerate client
-cd apps/api && uv run ruff check . && uv run ruff format . && uv run pyright && uv run pytest -q
-pnpm typecheck && pnpm lint
+pnpm check                                           # everything CI would run (also runs on git push)
 cd apps/api && uv run alembic revision --autogenerate -m "..." && uv run alembic upgrade head
 ```
 Ports 3000/8000/5433 are used by other projects on this machine. Ours are 3360/8360/5436/6380.
@@ -49,6 +48,7 @@ session cookies work. Browsers resolve `*.localhost` to 127.0.0.1 with no hosts-
 
 ## Workflow
 - Big changes: plan mode first, then implement in small slices with tests.
-- Before saying a task is done: API lint + types + tests, web typecheck + lint,
-  and check the page in the browser.
+- Before saying a task is done: `pnpm check` passes and the page is checked in the browser.
+- **GitHub Actions is disabled** (account billing lock), so CI is manual-only. The
+  pre-push hook (`.githooks/pre-push`, enabled by `pnpm install`) is the safety net. Never bypass it.
 - Git identity on this machine is JaOnwude's (shared project account; intentional).

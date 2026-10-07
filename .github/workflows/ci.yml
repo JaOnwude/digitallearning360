@@ -1,9 +1,12 @@
 name: CI
 
+# Manual-only while the GitHub account's Actions billing is unavailable.
+# The same checks run locally via `pnpm check` and the pre-push hook (.githooks/pre-push).
+# To re-enable automatic runs, restore:
+#   push: { branches: [main] }
+#   pull_request:
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}

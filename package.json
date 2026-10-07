@@ -8,6 +8,10 @@
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "api:openapi": "uv run --directory apps/api python -m app.scripts.export_openapi ../../packages/api-client/openapi.json",
-    "gen:client": "pnpm api:openapi && pnpm --filter @dl360/api-client generate"
+    "gen:client": "pnpm api:openapi && pnpm --filter @dl360/api-client generate",
+    "check:api": "cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run pyright && uv run pytest -q",
+    "check:client": "node scripts/check-client.mjs",
+    "check": "pnpm check:api && pnpm check:client && pnpm typecheck && pnpm lint",
+    "prepare": "git config core.hooksPath .githooks || true"
   }
 }

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Runs the same checks as CI before every push. Needs Docker running (API tests use testcontainers).
+# Emergency bypass (avoid): git push --no-verify
+echo "pre-push: running pnpm check (lint, types, tests, client drift)..."
+pnpm check || {
+  echo "pre-push: checks failed; push aborted. Fix the errors above and push again."
+  exit 1
+}
