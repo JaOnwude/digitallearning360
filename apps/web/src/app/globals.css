@@ -170,3 +170,19 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Printing a .print-area (e.g. sign-in slips) prints only that, not the app around it. */
+@media print {
+  body:has(.print-area) * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+}

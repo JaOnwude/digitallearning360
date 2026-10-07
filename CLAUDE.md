@@ -5,6 +5,14 @@ Multi-tenant school management SaaS for Nigerian schools (creche → SS3).
 Requirements are numbered (R1…, AC1…); reference them in commits and PRs.
 Pilot school material (report card template, logo) is in `docs/pilot-school/`.
 
+## Backend structure (feature-based)
+Each feature folder in `apps/api/app/` owns its `models.py`, `schemas.py`, `service.py`,
+`router.py` (e.g. `tenancy/`, `auth/`, `academics/`, `students/`, `staff/`, `audit/`).
+Register new models in `app/db/registry.py` and routers in `app/main.py`. Tests mirror
+features in `apps/api/tests/`. Every school-scoped endpoint uses `TenantDB` and an auth
+dependency (`SchoolAdmin`, `require_roles(...)`), loads rows with `get_or_404`, and gets a
+case in `tests/tenancy/test_isolation_sweep.py` (the test fails if a route is missing).
+
 ## Layout
 - `apps/api`: FastAPI + SQLAlchemy 2.0 (async) + Alembic. Python 3.13, managed by **uv**.
 - `apps/web`: Next.js 16 (App Router) + Tailwind v4 + shadcn/ui + TanStack Query.
@@ -17,7 +25,7 @@ Pilot school material (report card template, logo) is in `docs/pilot-school/`.
 ## Commands
 ```bash
 docker compose -f infra/docker-compose.yml up -d     # start Postgres + Redis
-cd apps/api && uv run fastapi dev app/main.py --port 8360
+cd apps/api && uv run uvicorn app.main:app --reload --reload-dir app --port 8360
 pnpm dev:web                                         # http://digitallearning360.localhost:3360
 pnpm gen:client                                      # API changed → regenerate client
 pnpm check                                           # everything CI would run (also runs on git push)

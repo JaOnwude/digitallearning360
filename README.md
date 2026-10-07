@@ -22,7 +22,7 @@ cd apps/api && uv sync && uv run alembic upgrade head
 
 ## Day to day
 ```bash
-cd apps/api && uv run fastapi dev app/main.py --port 8360   # API docs: http://localhost:8360/docs
+cd apps/api && uv run uvicorn app.main:app --reload --reload-dir app --port 8360  # docs: http://localhost:8360/docs
 pnpm dev:web                                                # http://progress.digitallearning360.localhost:3360
 ```
 
