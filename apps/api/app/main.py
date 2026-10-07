@@ -3,14 +3,14 @@ from contextlib import asynccontextmanager
 
 import sentry_sdk
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRoute
 
-from app.api import health
+from app.auth.router import router as auth_router
 from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.core.redis import close_redis
 from app.db.session import dispose_engine
+from app.health.router import router as health_router
 
 
 def _operation_id(route: APIRoute) -> str:
@@ -28,10 +28,12 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    configure_logging(json=settings.env in ("staging", "production"))
+    configure_logging(json=settings.is_deployed)
     if settings.sentry_dsn:
         sentry_sdk.init(dsn=settings.sentry_dsn, environment=settings.env, send_default_pii=False)
 
+    # No CORS: browsers reach the API only through the Next.js proxy on the school's own
+    # origin (apps/web/src/proxy.ts), so every API call is same-origin.
     app = FastAPI(
         title="DigitalLearning360 API",
         version="0.1.0",
@@ -40,14 +42,8 @@ def create_app() -> FastAPI:
         docs_url="/docs" if settings.env != "production" else None,
         redoc_url=None,
     )
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origin_regex=settings.cors_origin_regex,
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-        allow_headers=["Content-Type", "X-CSRF-Token"],
-    )
-    app.include_router(health.router)
+    app.include_router(health_router)
+    app.include_router(auth_router)
     return app
 
 

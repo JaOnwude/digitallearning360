@@ -5,14 +5,14 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+import app.db.registry  # noqa: F401  - registers all tables on Base.metadata
 from alembic import context
 from app.core.config import get_settings
-from app.db import models  # noqa: F401  - registers all tables on Base.metadata
 from app.db.base import Base
 
 config = context.config
 # The database URL always comes from app settings, never from alembic.ini.
-config.set_main_option("sqlalchemy.url", str(get_settings().database_url))
+config.set_main_option("sqlalchemy.url", get_settings().effective_migration_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
