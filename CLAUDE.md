@@ -44,6 +44,9 @@ session cookies work. Browsers resolve `*.localhost` to 127.0.0.1 with no hosts-
 - **Money:** integer **kobo** only. Balances are derived from `ledger_entries`.
   Apply payments under `SELECT … FOR UPDATE` on the invoice. Webhooks are idempotent (R21–R22).
 - **Results:** published results are immutable except via an audit-logged override (R15).
+  Cards, the parent portal and QR checks read only `report_snapshots` (frozen at publish);
+  never render a published card from live scores. Calculations live in `results/compute.py`
+  (pure, Decimal) and are pinned by the AC3 fixture in `tests/results/fixtures/`.
 - **Config over code:** level names, assessment components, grading bands,
   traits, comment slots and report layouts are per-**section** data, never hard-coded (R9–R17).
 - **Auth:** httpOnly cookie sessions only. No tokens in localStorage/sessionStorage (R7).
@@ -52,6 +55,8 @@ session cookies work. Browsers resolve `*.localhost` to 127.0.0.1 with no hosts-
   Respect `prefers-reduced-motion`. Parent pages: mobile-first, at most 170 KB JS per route.
 - API schemas (Pydantic) are separate from DB models (SQLAlchemy). No SQLModel.
 - Tests hit real Postgres via testcontainers. Don't mock the database.
+- Browser-only paths need a browser check: `apps/web/src/proxy.ts` must match every `/api/*`
+  URL, including ones ending in a file extension (`/api/reports/{id}.pdf`).
 
 ## Workflow
 - Big changes: plan mode first, then implement in small slices with tests.

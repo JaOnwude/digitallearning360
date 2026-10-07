@@ -71,6 +71,7 @@ def _fields(row: list[tuple[str, str | None, float]]) -> Table:
     t = Table(
         [[Field(label, value, w * mm) for label, value, w in row]],
         colWidths=[w * mm for *_, w in row],
+        hAlign="LEFT",
     )
     t.setStyle(TableStyle([(side, (0, 0), (-1, -1), 0) for side in NO_PAD]))
     return t

@@ -41,6 +41,10 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Skip Next internals and static files (anything with a file extension).
-  matcher: ["/((?!_next/|favicon.ico|.*\\.[a-zA-Z0-9]+$).*)"],
+  matcher: [
+    // Every API call, including ones that look like files (e.g. /api/reports/{id}.pdf).
+    "/api/:path*",
+    // Pages: skip Next internals and static files (anything with a file extension).
+    "/((?!_next/|favicon.ico|.*\\.[a-zA-Z0-9]+$).*)",
+  ],
 };

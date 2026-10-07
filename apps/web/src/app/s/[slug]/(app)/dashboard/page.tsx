@@ -1,46 +1,60 @@
 "use client";
 
+import Link from "next/link";
+import { BookOpen, GraduationCap, Settings2, Users } from "lucide-react";
+import { PortalResults } from "@/components/results/portal-results";
 import { useMe } from "@/components/shell/me-context";
 import { useSchool } from "@/components/school/school-context";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-/** M1 placeholder. Each role's real dashboard fills in as results (M2) and fees (M3) ship. */
-const COMING: Record<string, { title: string; body: string }[]> = {
-  staff: [
-    { title: "School setup", body: "Classes, arms, subjects and terms." },
-    { title: "Students & parents", body: "Records and CSV import." },
-    { title: "Results", body: "Score entry and report cards (M2)." },
-  ],
-  parent: [
-    { title: "Results", body: "Your children's report cards, once published." },
-    { title: "Fees", body: "Invoices, payments and receipts." },
-  ],
-  student: [{ title: "My results", body: "Your report cards, once published." }],
-};
+const STAFF_LINKS = [
+  { href: "/classes", title: "My classes", body: "Enter scores, rate students, approve results.", icon: BookOpen, roles: ["teacher", "section_head", "counsellor", "school_admin"] },
+  { href: "/students", title: "Students & parents", body: "Records, CSV import and sign-in slips.", icon: GraduationCap, roles: ["school_admin"] },
+  { href: "/staff", title: "Staff", body: "Accounts and roles.", icon: Users, roles: ["school_admin"] },
+  { href: "/setup", title: "School setup", body: "Classes, terms, subjects, teaching and results settings.", icon: Settings2, roles: ["school_admin"] },
+] as const;
+
+const TITLES = new Set(["mr", "mrs", "ms", "miss", "dr", "chief", "prof", "engr", "rev", "barr", "pastor", "alhaji", "alhaja"]);
+
+/** "Mrs Ngozi Okafor" → "Ngozi": greet by first name, not by title. */
+function greetingName(fullName: string): string {
+  const words = fullName.split(/\s+/).filter(Boolean);
+  return words.find((w) => !TITLES.has(w.replace(/\.$/, "").toLowerCase())) ?? words[0] ?? "";
+}
 
 export default function DashboardPage() {
   const me = useMe();
   const school = useSchool();
-  const firstName = me.full_name.split(" ")[0];
+  const firstName = greetingName(me.full_name);
+  const links = STAFF_LINKS.filter((l) => l.roles.some((r) => (me.roles as string[]).includes(r)));
+
   return (
     <div className="grid gap-6">
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Welcome, {firstName}</h1>
         <p className="text-muted-foreground">{school.name}</p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {(COMING[me.kind] ?? []).map((c) => (
-          <Card key={c.title}>
-            <CardHeader>
-              <CardTitle>{c.title}</CardTitle>
-              <CardDescription>{c.body}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <span className="text-muted-foreground text-xs">Coming soon</span>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {me.kind === "staff" ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {links.map((l) => (
+            <Link key={l.href} href={l.href} className="group">
+              <Card className="group-hover:border-brand h-full transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <l.icon className="text-brand-ink size-4" /> {l.title}
+                  </CardTitle>
+                  <CardDescription>{l.body}</CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <section className="grid gap-3">
+          <h2 className="text-lg font-semibold">{me.kind === "parent" ? "Your children's results" : "Your results"}</h2>
+          <PortalResults isParent={me.kind === "parent"} />
+        </section>
+      )}
     </div>
   );
 }
