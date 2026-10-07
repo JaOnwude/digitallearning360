@@ -773,7 +773,10 @@ def upgrade() -> None:
 
     for table in NEW_TENANT_TABLES:
         enable_tenant_rls(table)
-    if_app_role("GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO dl360_app")
+    # Grant on the new tables only: a blanket "ALL TABLES" grant would undo earlier
+    # restrictions such as the append-only audit_log (caught by tests/tenancy/test_rls.py).
+    for table in NEW_TENANT_TABLES:
+        if_app_role(f"GRANT SELECT, INSERT, UPDATE, DELETE ON {table} TO dl360_app")
     # Published snapshots are never edited in place: superseding only flips is_current.
     if_app_role("REVOKE DELETE ON report_snapshots FROM dl360_app")
 
