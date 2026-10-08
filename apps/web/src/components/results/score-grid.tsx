@@ -268,7 +268,7 @@ function SaveIndicator({ state, error }: { state: SaveState; error: string | nul
       </span>
     );
   return (
-    <span className="text-success flex items-center gap-1">
+    <span className="text-success-ink flex items-center gap-1">
       <Cloud className="size-4" /> All changes saved
     </span>
   );

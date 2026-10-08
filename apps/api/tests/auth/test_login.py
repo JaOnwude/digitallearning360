@@ -109,8 +109,15 @@ async def test_enrolled_admin_verifies_code_or_single_use_recovery_code(
     admin = await make_staff(school, Role.SCHOOL_ADMIN, totp_secret=secret)
     c = client_for(school.slug)
     assert await staff_login(c, admin.email or "") == "totp_verify"
-    res = await c.post("/api/auth/totp/verify", json={"code": totp_now(secret)}, headers=csrf(c))
+    code = totp_now(secret)
+    res = await c.post("/api/auth/totp/verify", json={"code": code}, headers=csrf(c))
     assert res.json()["next"] == "done" and res.json()["recovery_codes"] is None
+
+    # The same code can't be used again, even from a fresh sign-in (ASVS 2.8.4).
+    again = client_for(school.slug)
+    assert await staff_login(again, admin.email or "") == "totp_verify"
+    replay = await again.post("/api/auth/totp/verify", json={"code": code}, headers=csrf(again))
+    assert replay.status_code == 400 and "already used" in replay.json()["detail"]
 
 
 async def test_session_is_only_valid_on_its_own_school(

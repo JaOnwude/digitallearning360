@@ -131,7 +131,17 @@ async def totp_verify(
     else:
         if not user.totp_enabled or user.totp_secret_enc is None:
             raise HTTPException(status.HTTP_400_BAD_REQUEST, "Set up two-factor first")
-        if not totp.verify(decrypt(user.totp_secret_enc), code):
+        if totp.verify(decrypt(user.totp_secret_enc), code):
+            # One use per code (ASVS 2.8.4): a code seen over someone's shoulder can't be replayed.
+            fresh = await get_redis().set(
+                f"totp-used:{user.id}:{code.strip().replace(' ', '')}", "1", nx=True, ex=120
+            )
+            if not fresh:
+                raise HTTPException(
+                    status.HTTP_400_BAD_REQUEST,
+                    "That code was already used. Wait for the next one in your app.",
+                )
+        else:
             used = sha256_hex(totp.normalise_recovery_code(code))
             if used not in user.recovery_code_hashes:
                 raise HTTPException(status.HTTP_400_BAD_REQUEST, "That code didn't match.")

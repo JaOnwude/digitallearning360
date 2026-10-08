@@ -29,3 +29,9 @@ coverage/
 .coverage
 .local-test-accounts.md
 .local-staging-secrets.md
+
+# e2e (Playwright) run artefacts
+e2e/.world.json
+e2e/.outbox.jsonl
+e2e/playwright-report/
+e2e/test-results/

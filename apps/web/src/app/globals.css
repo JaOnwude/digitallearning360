@@ -11,6 +11,7 @@
   --color-brand-ink: var(--brand-ink);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
+  --color-success-ink: var(--success-ink);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
   --ease-standard: var(--motion-ease-standard);
@@ -64,6 +65,8 @@
   --brand-foreground: oklch(0.99 0 0);
   --brand-ink: oklch(0.45 0.11 165);
   --success: oklch(0.55 0.14 150);
+  /* Success-coloured text: passes AA (4.5:1) on --background and on a success/15 tint. */
+  --success-ink: oklch(0.42 0.12 150);
   --success-foreground: oklch(0.99 0 0);
   --warning: oklch(0.8 0.16 80);
   --warning-foreground: oklch(0.25 0.05 80);
@@ -111,6 +114,7 @@
   --brand-foreground: oklch(0.15 0 0);
   --brand-ink: oklch(0.78 0.1 165);
   --success: oklch(0.68 0.14 150);
+  --success-ink: oklch(0.8 0.13 150);
   --success-foreground: oklch(0.15 0 0);
   --warning: oklch(0.82 0.15 80);
   --warning-foreground: oklch(0.2 0.04 80);

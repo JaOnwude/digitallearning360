@@ -13,7 +13,7 @@ const TONE: Record<SheetStatus, string> = {
   draft: "bg-muted text-muted-foreground",
   submitted: "bg-warning/20 text-warning-foreground",
   approved: "bg-brand/20 text-brand-ink",
-  published: "bg-success/15 text-success",
+  published: "bg-success/15 text-success-ink",
 };
 
 export function StatusBadge({ status, className }: { status: SheetStatus; className?: string }) {

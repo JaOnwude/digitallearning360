@@ -28,6 +28,7 @@ docker compose -f infra/docker-compose.yml up -d     # start Postgres + Redis
 pnpm dev                                             # API + web together (or dev:api / dev:web)
 pnpm gen:client                                      # API changed → regenerate client
 pnpm check                                           # everything CI would run (also runs on git push)
+pnpm e2e                                             # browser tests of the pilot flows (Playwright, ~2 min)
 cd apps/api && uv run alembic revision --autogenerate -m "..." && uv run alembic upgrade head
 ```
 Ports 3000/8000/5433 are used by other projects on this machine. Ours are 3360/8360/5436/6380.
@@ -61,6 +62,8 @@ session cookies work. Browsers resolve `*.localhost` to 127.0.0.1 with no hosts-
 ## Workflow
 - Big changes: plan mode first, then implement in small slices with tests.
 - Before saying a task is done: `pnpm check` passes and the page is checked in the browser.
+- Before deploying, or after changing a pilot flow (sign-in, scores, publish, fees): `pnpm e2e` passes.
+  It runs its own API (8362) + web build (3362) on a throwaway `dl360_e2e` database.
 - **GitHub Actions is disabled** (account billing lock), so CI is manual-only. The
   pre-push hook (`.githooks/pre-push`, enabled by `pnpm install`) is the safety net. Never bypass it.
 - Git identity on this machine is JaOnwude's (shared project account; intentional).

@@ -32,8 +32,8 @@ import { Switch } from "@/components/ui/switch";
 import { naira, toKobo } from "@/lib/money";
 
 export function BalanceBadge({ balance }: { balance: number }) {
-  if (balance === 0) return <Badge className="bg-success/15 text-success border-transparent">Paid</Badge>;
-  if (balance < 0) return <Badge className="bg-success/15 text-success border-transparent">In credit {naira(-balance)}</Badge>;
+  if (balance === 0) return <Badge className="bg-success/15 text-success-ink border-transparent">Paid</Badge>;
+  if (balance < 0) return <Badge className="bg-success/15 text-success-ink border-transparent">In credit {naira(-balance)}</Badge>;
   return <Badge className="bg-warning/20 text-warning-foreground border-transparent">Owing {naira(balance)}</Badge>;
 }
 
@@ -192,7 +192,15 @@ function PayCard({ invoice, onChanged }: { invoice: InvoiceDetail; onChanged: ()
     <Card className="border-brand">
       <CardHeader>
         <CardTitle>Pay {naira(invoice.balance_kobo)}</CardTitle>
-        <CardDescription>Pay online in a minute, or by bank transfer and upload the receipt.</CardDescription>
+        {(invoice.can_pay_online || bank.account_number) && (
+          <CardDescription>
+            {invoice.can_pay_online && bank.account_number
+              ? "Pay online in a minute, or by bank transfer and upload the receipt."
+              : invoice.can_pay_online
+                ? "Pay online in a minute with a card, bank transfer or USSD."
+                : "Pay by bank transfer, then upload the receipt here."}
+          </CardDescription>
+        )}
       </CardHeader>
       <CardContent className="grid gap-4">
         {invoice.can_pay_online && (

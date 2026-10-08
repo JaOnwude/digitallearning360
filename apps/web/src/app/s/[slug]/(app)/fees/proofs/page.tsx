@@ -92,7 +92,7 @@ function ProofCard({ proof: p, onReview }: { proof: ProofOut; onReview: (action:
               <TriangleAlert className="size-4 shrink-0" /> Possible duplicate: the same file or bank reference was uploaded before.
             </p>
           )}
-          {p.status === "confirmed" && <Badge className="bg-success/15 text-success w-fit border-transparent">Confirmed {naira(p.confirmed_amount_kobo ?? 0)}</Badge>}
+          {p.status === "confirmed" && <Badge className="bg-success/15 text-success-ink w-fit border-transparent">Confirmed {naira(p.confirmed_amount_kobo ?? 0)}</Badge>}
           {p.status === "rejected" && <p className="text-destructive">Rejected: {p.review_note}</p>}
         </div>
         {p.status === "pending" && (

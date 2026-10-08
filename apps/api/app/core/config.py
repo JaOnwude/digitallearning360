@@ -66,6 +66,16 @@ class Settings(BaseSettings):
 
     sentry_dsn: str | None = None
 
+    # Local/test only: also append each console email as a JSON line here (the browser
+    # end-to-end tests read parents' sign-in codes from it). Ignored when deployed.
+    email_outbox_file: str | None = None
+
+    @field_validator("paystack_secret_key", "resend_api_key", "sentry_dsn", mode="before")
+    @classmethod
+    def _blank_is_unset(cls, v: object) -> object:
+        """An empty value in a dashboard or .env means "not configured", not a blank key."""
+        return None if isinstance(v, str) and not v.strip() else v
+
     @field_validator("database_url", "migration_database_url")
     @classmethod
     def _normalise_db_url(cls, v: str | None) -> str | None:

@@ -107,7 +107,7 @@ export function Broadsheet({ armId, data }: { armId: string; data: BroadsheetOut
               {data.subjects.map((s) => (
                 <th key={s.subject_id} className="min-w-14 p-2 text-center font-medium" title={`${s.name}${s.teacher ? ` · ${s.teacher}` : ""}`}>
                   <span className="block max-w-20 truncate">{s.name}</span>
-                  <span className={s.complete ? "text-success" : "text-muted-foreground"}>{s.complete ? "✓ done" : "pending"}</span>
+                  <span className={s.complete ? "text-success-ink" : "text-muted-foreground"}>{s.complete ? "✓ done" : "pending"}</span>
                 </th>
               ))}
               <th className="p-2 text-center font-medium">Total</th>

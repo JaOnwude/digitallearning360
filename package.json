@@ -14,7 +14,8 @@
     "check:api": "cd apps/api && uv run ruff check . && uv run ruff format --check . && uv run pyright && uv run pytest -q",
     "check:client": "node scripts/check-client.mjs",
     "check": "pnpm check:api && pnpm check:client && pnpm typecheck && pnpm lint",
-    "prepare": "git config core.hooksPath .githooks || true"
+    "prepare": "git config core.hooksPath .githooks || true",
+    "e2e": "pnpm --filter @dl360/e2e test"
   },
   "devDependencies": {
     "concurrently": "^10.0.5"

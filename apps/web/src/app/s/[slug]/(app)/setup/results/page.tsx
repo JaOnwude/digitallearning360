@@ -109,7 +109,7 @@ function ComponentsCard({ cfg, apply }: CardProps) {
           <Button variant="outline" size="sm" onClick={() => setRows([...rows, { name: "", short_name: "", max_score: 10 }])}>
             <Plus /> Add column
           </Button>
-          <span className={total === 100 ? "text-success text-sm" : "text-destructive text-sm"}>Total: {total} / 100</span>
+          <span className={total === 100 ? "text-success-ink text-sm" : "text-destructive text-sm"}>Total: {total} / 100</span>
           <Button variant="brand" className="ml-auto" disabled={total !== 100 || put.isPending} onClick={async () => apply(await withToast(put.mutateAsync({ sectionId: cfg.section_id, data: rows }), "Score columns saved"))}>
             Save columns
           </Button>

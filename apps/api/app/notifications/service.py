@@ -4,6 +4,7 @@ SMS (Termii) arrives in Phase 2 as another backend behind the same functions.
 """
 
 import asyncio
+import json
 
 import resend
 import structlog
@@ -16,6 +17,11 @@ log = structlog.get_logger(__name__)
 sent_messages: list[dict[str, str]] = []
 
 
+def _append_line(path: str, line: str) -> None:
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(line + "\n")
+
+
 async def send_email(*, to: str, subject: str, text: str) -> None:
     settings = get_settings()
     message = {"to": to, "subject": subject, "text": text}
@@ -25,6 +31,8 @@ async def send_email(*, to: str, subject: str, text: str) -> None:
             log.error("email.not_configured", to=to, subject=subject)
             return
         sent_messages.append(message)
+        if settings.email_outbox_file:
+            await asyncio.to_thread(_append_line, settings.email_outbox_file, json.dumps(message))
         # Local development: the message (including any code) is printed to the API console.
         log.info("email.console", **message)
         return

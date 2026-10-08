@@ -46,7 +46,7 @@ export default function MyClassesPage() {
                     <span className="w-20 font-medium">{c.arm_label}</span>
                     <span className="flex-1">{c.subject_name}</span>
                     {c.complete ? (
-                      <span className="text-success flex items-center gap-1 text-sm">
+                      <span className="text-success-ink flex items-center gap-1 text-sm">
                         <CheckCircle2 className="size-4" /> Complete
                       </span>
                     ) : (

@@ -97,7 +97,7 @@ export default function StaffPage() {
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {s.two_factor_enabled ? (
-                      <span className="text-success flex items-center gap-1 text-sm">
+                      <span className="text-success-ink flex items-center gap-1 text-sm">
                         <ShieldCheck className="size-4" /> On
                       </span>
                     ) : (

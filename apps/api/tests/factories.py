@@ -160,7 +160,9 @@ class ResultsWorld:
     trait_ids: list[uuid.UUID]
 
 
-async def make_results_world(n_students: int = 3, term_number: int = 1) -> ResultsWorld:
+async def make_results_world(
+    n_students: int = 3, term_number: int = 1, slug: str | None = None
+) -> ResultsWorld:
     """A JSS1 A class configured like Progress JSS, with the current term set."""
     from sqlalchemy import select
 
@@ -169,7 +171,7 @@ async def make_results_world(n_students: int = 3, term_number: int = 1) -> Resul
     from app.results.config import BandSpec, ComponentSpec
     from app.results.models import AssessmentComponent, CommentAuthor, CommentSlot, Trait
 
-    school = await make_school()
+    school = await make_school(slug)
     st = await make_structure(school)
     async with tenant_session(school) as db:
         section = await db.get(Section, st.section.id)
