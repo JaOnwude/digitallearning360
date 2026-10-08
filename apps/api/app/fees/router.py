@@ -37,20 +37,20 @@ from app.fees.schemas import (
     DiscountOut,
     ExemptIn,
     FeeItemIO,
+    FeeLevelOut,
     FeeSettingsIO,
     FeeSetupOut,
     FeeSummaryOut,
+    FeeTermOut,
     GenerateIn,
     GenerateOut,
     InvoiceDetail,
     InvoicePage,
-    LevelOut,
     OfficePaymentIn,
     ProofOut,
     ProofRejectIn,
     ProofReviewIn,
     ScheduleCell,
-    TermOut,
 )
 from app.results.access import current_term
 from app.results.service import term_label
@@ -107,13 +107,13 @@ async def _setup(db: TenantDB, school: School) -> FeeSetupOut:
             for i in await db.scalars(select(FeeItem).order_by(FeeItem.sort, FeeItem.name))
         ],
         levels=[
-            LevelOut(id=lv.id, name=lv.name)
+            FeeLevelOut(id=lv.id, name=lv.name)
             for lv in await db.scalars(
                 select(ClassLevel).order_by(ClassLevel.sort, ClassLevel.name)
             )
         ],
         terms=[
-            TermOut(id=t.id, label=term_label(t, session.name), is_current=t.is_current)
+            FeeTermOut(id=t.id, label=term_label(t, session.name), is_current=t.is_current)
             for t in terms
         ]
         if session

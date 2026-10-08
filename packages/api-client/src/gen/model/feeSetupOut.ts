@@ -4,17 +4,17 @@
  * DigitalLearning360 API
  * OpenAPI spec version: 0.1.0
  */
-import type { AppFeesSchemasLevelOut } from './appFeesSchemasLevelOut';
-import type { AppFeesSchemasTermOut } from './appFeesSchemasTermOut';
 import type { FeeItemIO } from './feeItemIO';
+import type { FeeLevelOut } from './feeLevelOut';
 import type { FeeSettingsIO } from './feeSettingsIO';
+import type { FeeTermOut } from './feeTermOut';
 import type { ScheduleCell } from './scheduleCell';
 
 export interface FeeSetupOut {
   items: FeeItemIO[];
-  levels: AppFeesSchemasLevelOut[];
+  levels: FeeLevelOut[];
   paystack_configured: boolean;
   schedule: ScheduleCell[];
   settings: FeeSettingsIO;
-  terms: AppFeesSchemasTermOut[];
+  terms: FeeTermOut[];
 }

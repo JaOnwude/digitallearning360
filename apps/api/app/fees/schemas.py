@@ -32,12 +32,12 @@ class FeeSettingsIO(BaseModel):
     withhold_results_for_debt: bool = True
 
 
-class LevelOut(BaseModel):
+class FeeLevelOut(BaseModel):
     id: UUID
     name: str
 
 
-class TermOut(BaseModel):
+class FeeTermOut(BaseModel):
     id: UUID
     label: str
     is_current: bool
@@ -45,8 +45,8 @@ class TermOut(BaseModel):
 
 class FeeSetupOut(BaseModel):
     items: list[FeeItemIO]
-    levels: list[LevelOut]
-    terms: list[TermOut]
+    levels: list[FeeLevelOut]
+    terms: list[FeeTermOut]
     schedule: list[ScheduleCell]
     settings: FeeSettingsIO
     paystack_configured: bool

@@ -4,8 +4,8 @@
  * DigitalLearning360 API
  * OpenAPI spec version: 0.1.0
  */
-import type { AppAcademicsSchemasLevelOut } from './appAcademicsSchemasLevelOut';
 import type { AssessmentMode } from './assessmentMode';
+import type { LevelOut } from './levelOut';
 import type { SectionKind } from './sectionKind';
 
 export interface SectionOut {
@@ -13,7 +13,7 @@ export interface SectionOut {
   display_name: string;
   id: string;
   kind: SectionKind;
-  levels: AppAcademicsSchemasLevelOut[];
+  levels: LevelOut[];
   name: string;
   student_login_enabled: boolean;
 }

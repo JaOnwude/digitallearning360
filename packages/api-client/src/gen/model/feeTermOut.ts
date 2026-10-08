@@ -5,7 +5,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface AppFeesSchemasLevelOut {
+export interface FeeTermOut {
   id: string;
-  name: string;
+  is_current: boolean;
+  label: string;
 }

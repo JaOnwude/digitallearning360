@@ -1130,6 +1130,25 @@
         "title": "FeeItemIO",
         "type": "object"
       },
+      "FeeLevelOut": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "FeeLevelOut",
+        "type": "object"
+      },
       "FeeSettingsIO": {
         "properties": {
           "account_name": {
@@ -1200,7 +1219,7 @@
           },
           "levels": {
             "items": {
-              "$ref": "#/components/schemas/app__fees__schemas__LevelOut"
+              "$ref": "#/components/schemas/FeeLevelOut"
             },
             "title": "Levels",
             "type": "array"
@@ -1221,7 +1240,7 @@
           },
           "terms": {
             "items": {
-              "$ref": "#/components/schemas/app__fees__schemas__TermOut"
+              "$ref": "#/components/schemas/FeeTermOut"
             },
             "title": "Terms",
             "type": "array"
@@ -1287,6 +1306,30 @@
           "classes"
         ],
         "title": "FeeSummaryOut",
+        "type": "object"
+      },
+      "FeeTermOut": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_current": {
+            "title": "Is Current",
+            "type": "boolean"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "is_current"
+        ],
+        "title": "FeeTermOut",
         "type": "object"
       },
       "FormTeacherIn": {
@@ -1838,6 +1881,60 @@
           "pending_proofs"
         ],
         "title": "InvoiceRow",
+        "type": "object"
+      },
+      "LevelOut": {
+        "properties": {
+          "arms": {
+            "items": {
+              "$ref": "#/components/schemas/ArmOut"
+            },
+            "title": "Arms",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "next_level_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Level Id"
+          },
+          "sort": {
+            "title": "Sort",
+            "type": "integer"
+          },
+          "subject_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Subject Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "sort",
+          "next_level_id",
+          "arms",
+          "subject_ids"
+        ],
+        "title": "LevelOut",
         "type": "object"
       },
       "LevelUpdateIn": {
@@ -2978,7 +3075,7 @@
           },
           "levels": {
             "items": {
-              "$ref": "#/components/schemas/app__academics__schemas__LevelOut"
+              "$ref": "#/components/schemas/LevelOut"
             },
             "title": "Levels",
             "type": "array"
@@ -3128,7 +3225,7 @@
           },
           "terms": {
             "items": {
-              "$ref": "#/components/schemas/app__academics__schemas__TermOut"
+              "$ref": "#/components/schemas/TermOut"
             },
             "title": "Terms",
             "type": "array"
@@ -4153,6 +4250,69 @@
         "title": "SubjectTeacherIn",
         "type": "object"
       },
+      "TermOut": {
+        "properties": {
+          "ends_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ends On"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_current": {
+            "title": "Is Current",
+            "type": "boolean"
+          },
+          "next_term_begins": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Term Begins"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "starts_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starts On"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "starts_on",
+          "ends_on",
+          "next_term_begins",
+          "is_current"
+        ],
+        "title": "TermOut",
+        "type": "object"
+      },
       "TermUpdateIn": {
         "properties": {
           "ends_on": {
@@ -4449,166 +4609,6 @@
           "school"
         ],
         "title": "VerifyOut",
-        "type": "object"
-      },
-      "app__academics__schemas__LevelOut": {
-        "properties": {
-          "arms": {
-            "items": {
-              "$ref": "#/components/schemas/ArmOut"
-            },
-            "title": "Arms",
-            "type": "array"
-          },
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "next_level_id": {
-            "anyOf": [
-              {
-                "format": "uuid",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Next Level Id"
-          },
-          "sort": {
-            "title": "Sort",
-            "type": "integer"
-          },
-          "subject_ids": {
-            "items": {
-              "format": "uuid",
-              "type": "string"
-            },
-            "title": "Subject Ids",
-            "type": "array"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "sort",
-          "next_level_id",
-          "arms",
-          "subject_ids"
-        ],
-        "title": "LevelOut",
-        "type": "object"
-      },
-      "app__academics__schemas__TermOut": {
-        "properties": {
-          "ends_on": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ends On"
-          },
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "is_current": {
-            "title": "Is Current",
-            "type": "boolean"
-          },
-          "next_term_begins": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Next Term Begins"
-          },
-          "number": {
-            "title": "Number",
-            "type": "integer"
-          },
-          "starts_on": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Starts On"
-          }
-        },
-        "required": [
-          "id",
-          "number",
-          "starts_on",
-          "ends_on",
-          "next_term_begins",
-          "is_current"
-        ],
-        "title": "TermOut",
-        "type": "object"
-      },
-      "app__fees__schemas__LevelOut": {
-        "properties": {
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ],
-        "title": "LevelOut",
-        "type": "object"
-      },
-      "app__fees__schemas__TermOut": {
-        "properties": {
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "is_current": {
-            "title": "Is Current",
-            "type": "boolean"
-          },
-          "label": {
-            "title": "Label",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "label",
-          "is_current"
-        ],
-        "title": "TermOut",
         "type": "object"
       }
     }
