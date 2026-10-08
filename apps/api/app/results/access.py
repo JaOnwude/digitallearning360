@@ -151,16 +151,21 @@ async def enrolled_students(db: AsyncSession, ctx: ArmContext) -> list[tuple[Enr
 # ---------------------------------------------------------------- R18 withholding
 
 
-async def is_withheld(db: AsyncSession, student_id: uuid.UUID, term_id: uuid.UUID) -> bool:
-    """R18/AC6: hide published results while that term's invoice has any balance > ₦0,
-    when the school enables it (default on) and the student isn't exempted."""
+async def withheld_balance(db: AsyncSession, student_id: uuid.UUID, term_id: uuid.UUID) -> int:
+    """R18/AC6: the balance (kobo) that hides this term's published results, or 0 if they show.
+    Results are hidden while the term's invoice has any balance > ₦0, when the school enables
+    withholding (default on) and the student isn't exempted."""
     invoice = await db.scalar(
         select(Invoice).where(Invoice.student_id == student_id, Invoice.term_id == term_id)
     )
     if invoice is None or invoice.results_exempt:
-        return False
+        return 0
     school = await db.get(School, invoice.school_id)
     fees_cfg = ((school.settings if school else None) or {}).get("fees", {})
     if not fees_cfg.get("withhold_results_for_debt", True):
-        return False
-    return await ledger.balance(db, invoice.id) > 0
+        return 0
+    return max(await ledger.balance(db, invoice.id), 0)
+
+
+async def is_withheld(db: AsyncSession, student_id: uuid.UUID, term_id: uuid.UUID) -> bool:
+    return await withheld_balance(db, student_id, term_id) > 0

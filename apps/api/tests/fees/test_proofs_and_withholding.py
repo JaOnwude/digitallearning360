@@ -113,9 +113,12 @@ async def test_results_withheld_until_paid(
 
     parent = await fees_world.parent(client_for)
     kids = (await parent.get("/api/portal/results")).json()
-    assert kids[0]["results"][0]["withheld"] is True
+    row = kids[0]["results"][0]
+    assert row["withheld"] is True and row["withheld_balance_kobo"] == TUITION_KOBO
+    assert row["average"] is None  # nothing from a withheld card leaks
     blocked = await parent.get(f"/api/portal/snapshots/{snap_id}")
-    assert blocked.status_code == 403 and "withheld" in blocked.json()["detail"]
+    assert blocked.status_code == 403
+    assert "outstanding balance ₦45,000" in blocked.json()["detail"]
     assert (await parent.get(f"/api/reports/{snap_id}.pdf")).status_code == 403
 
     # Exemption lifts it…
@@ -134,4 +137,6 @@ async def test_results_withheld_until_paid(
         f"/api/fees/invoices/{inv}/payments", json={"amount_kobo": TUITION_KOBO}
     )
     assert (await parent.get(f"/api/portal/snapshots/{snap_id}")).status_code == 200
-    assert (await parent.get("/api/portal/results")).json()[0]["results"][0]["withheld"] is False
+    row = (await parent.get("/api/portal/results")).json()[0]["results"][0]
+    assert row["withheld"] is False and row["withheld_balance_kobo"] == 0
+    assert row["average"] == "70.00"

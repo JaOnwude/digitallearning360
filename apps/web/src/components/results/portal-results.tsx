@@ -5,6 +5,7 @@ import { useReportsPortalResults } from "@dl360/api-client";
 import { ChevronRight, FileText, Lock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { naira } from "@/lib/money";
 
 /** Parent: each child with their published results. Student: themself. */
 export function PortalResults({ isParent }: { isParent: boolean }) {
@@ -38,11 +39,16 @@ export function PortalResults({ isParent }: { isParent: boolean }) {
                 {child.results.map((r) => (
                   <li key={r.snapshot_id}>
                     {r.withheld ? (
-                      <div className="flex items-center gap-3 p-3 text-sm">
-                        <Lock className="text-muted-foreground size-4" />
-                        <span className="flex-1">{r.term_label}</span>
-                        <span className="text-muted-foreground">Withheld: please contact the school</span>
-                      </div>
+                      <Link href="/fees" className="hover:bg-muted/50 flex min-h-12 items-center gap-3 p-3 text-sm">
+                        <Lock className="text-muted-foreground size-5 shrink-0" />
+                        <span className="flex-1">
+                          <span className="block font-medium">{r.term_label}</span>
+                          <span className="text-muted-foreground">
+                            Results withheld — outstanding balance {naira(r.withheld_balance_kobo ?? 0)}
+                          </span>
+                        </span>
+                        <span className="text-brand-ink shrink-0 font-medium">Pay fees</span>
+                      </Link>
                     ) : (
                       <Link href={`/results/${r.snapshot_id}`} className="hover:bg-muted/50 flex min-h-12 items-center gap-3 p-3">
                         <FileText className="text-brand-ink size-5" />

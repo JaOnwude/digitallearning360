@@ -11,8 +11,9 @@ from app.auth.deps import CurrentPrincipal, Principal
 from app.auth.models import STAFF_ROLES, Role
 from app.core.config import get_settings
 from app.db.helpers import get_or_404
+from app.fees.ledger import naira
 from app.reports import pdf
-from app.results.access import forbidden, heads_section, is_withheld
+from app.results.access import forbidden, heads_section, withheld_balance
 from app.results.models import ReportSnapshot, TeachingAssignment
 from app.results.schemas import ChildResultsOut, PublishedTermOut, SnapshotOut, VerifyOut
 from app.students.models import Enrollment, Guardian, Student, StudentGuardian
@@ -69,9 +70,11 @@ async def _readable_snapshot(db: TenantDB, p: Principal, snapshot_id: uuid.UUID)
     if await _staff_may_see_arm(db, p, arm):
         return snap
     if enrollment.student_id in await _student_ids_for(db, p) and snap.is_current:
-        if await is_withheld(db, enrollment.student_id, snap.term_id):
+        if owed := await withheld_balance(db, enrollment.student_id, snap.term_id):
             raise HTTPException(
-                status.HTTP_403_FORBIDDEN, "This result is withheld. Please contact the school."
+                status.HTTP_403_FORBIDDEN,
+                f"Results withheld: outstanding balance {naira(owed)}. "
+                "Please pay or contact the school.",
             )
         return snap
     # Indistinguishable from a missing card for anyone else (AC1).
@@ -232,15 +235,17 @@ async def portal_results(p: CurrentPrincipal, db: TenantDB) -> list[ChildResults
         )
         results = []
         for snap, term in snaps:
-            withheld = await is_withheld(db, student.id, term.id)
+            owed = await withheld_balance(db, student.id, term.id)
             results.append(
                 PublishedTermOut(
                     snapshot_id=snap.id,
                     term_label=snap.data["term"]["label"],
                     session=snap.data["term"]["session"],
-                    average=snap.data["summary"]["average"],
+                    # Nothing from a withheld card leaves the server, not even the average.
+                    average=None if owed else snap.data["summary"]["average"],
                     published_at=snap.published_at,
-                    withheld=withheld,
+                    withheld=owed > 0,
+                    withheld_balance_kobo=owed,
                 )
             )
         out.append(

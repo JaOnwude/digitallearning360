@@ -286,9 +286,10 @@ class PublishedTermOut(BaseModel):
     snapshot_id: UUID
     term_label: str
     session: str
-    average: Decimal
+    average: Decimal | None  # None while withheld
     published_at: datetime
     withheld: bool
+    withheld_balance_kobo: int = 0
 
 
 class ChildResultsOut(BaseModel):

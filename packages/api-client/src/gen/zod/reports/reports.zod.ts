@@ -11,19 +11,20 @@ import * as zod from 'zod';
  * A parent's children (or a student themself) with their published results.
  * @summary Portal Results
  */
-export const reportsPortalResultsResponseResultsItemAverageRegExp = new RegExp('^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$');
-
+export const reportsPortalResultsResponseResultsItemAverageOneRegExp = new RegExp('^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$');
+export const reportsPortalResultsResponseResultsItemWithheldBalanceKoboDefault = 0;
 
 export const ReportsPortalResultsResponseItem = zod.object({
   "class_label": zod.union([zod.string(),zod.null()]),
   "full_name": zod.string(),
   "results": zod.array(zod.object({
-  "average": zod.string().regex(reportsPortalResultsResponseResultsItemAverageRegExp),
+  "average": zod.union([zod.string().regex(reportsPortalResultsResponseResultsItemAverageOneRegExp),zod.null()]),
   "published_at": zod.iso.datetime({"offset":true}),
   "session": zod.string(),
   "snapshot_id": zod.uuid(),
   "term_label": zod.string(),
-  "withheld": zod.boolean()
+  "withheld": zod.boolean(),
+  "withheld_balance_kobo": zod.int().default(reportsPortalResultsResponseResultsItemWithheldBalanceKoboDefault)
 })),
   "student_id": zod.uuid()
 })

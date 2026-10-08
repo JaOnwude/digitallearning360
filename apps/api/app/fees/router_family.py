@@ -12,6 +12,7 @@ from sqlalchemy import or_, select
 from app.audit import service as audit
 from app.auth.deps import CurrentPrincipal
 from app.auth.models import User
+from app.core import ratelimit
 from app.core.config import get_settings
 from app.core.http import client_ip
 from app.fees import ledger
@@ -79,6 +80,7 @@ async def start_paystack(
     paystack: Paystack,
 ) -> CheckoutOut:
     """Paystack checkout for the full outstanding balance (decided: no part-payment online)."""
+    await ratelimit.hit(f"paystack-start:{p.session.user_id}", limit=10, window_seconds=900)
     invoice = await payable_invoice(db, p, invoice_id)
     settings = fees.fee_settings(school)
     if not fees.online_payment_ready(settings):
@@ -137,6 +139,7 @@ async def verify_paystack(
 ) -> PaymentResultOut:
     """Called by the page Paystack returns the parent to. Applies the payment if the webhook
     hasn't already (both paths are idempotent)."""
+    await ratelimit.hit(f"paystack-verify:{p.session.user_id}", limit=30, window_seconds=900)
     intent = await db.scalar(select(PaymentIntent).where(PaymentIntent.reference == body.reference))
     if intent is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Payment not found")
@@ -179,6 +182,8 @@ async def upload_proof(
     paid_on: Annotated[date | None, Form()] = None,
 ) -> ProofOut:
     """R23: a parent's evidence of a bank transfer, for the bursar to confirm."""
+    await ratelimit.hit(f"proof-upload:{p.session.user_id}", limit=10, window_seconds=3600)
+    await ratelimit.hit(f"proof-upload-ip:{client_ip(request)}", limit=30, window_seconds=3600)
     invoice = await payable_invoice(db, p, invoice_id)
     content = await file.read(MAX_PROOF_BYTES + 1)
     if len(content) > MAX_PROOF_BYTES:

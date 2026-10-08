@@ -11,6 +11,7 @@ from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.core.redis import close_redis
 from app.db.session import dispose_engine
+from app.fees import reconcile
 from app.fees.router import router as fees_router
 from app.fees.router_family import router as fees_family_router
 from app.fees.webhook import router as webhook_router
@@ -33,7 +34,11 @@ def _operation_id(route: APIRoute) -> str:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    yield
+    if get_settings().env == "test":
+        yield  # tests call reconcile() directly
+    else:
+        async with reconcile.background():
+            yield
     await dispose_engine()
     await close_redis()
 

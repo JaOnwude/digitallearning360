@@ -6,11 +6,11 @@
  */
 
 export interface PublishedTermOut {
-  /** @pattern ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$ */
-  average: string;
+  average: string | null;
   published_at: string;
   session: string;
   snapshot_id: string;
   term_label: string;
   withheld: boolean;
+  withheld_balance_kobo?: number;
 }

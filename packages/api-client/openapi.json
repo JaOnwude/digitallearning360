@@ -2596,9 +2596,16 @@
       "PublishedTermOut": {
         "properties": {
           "average": {
-            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-            "title": "Average",
-            "type": "string"
+            "anyOf": [
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average"
           },
           "published_at": {
             "format": "date-time",
@@ -2621,6 +2628,11 @@
           "withheld": {
             "title": "Withheld",
             "type": "boolean"
+          },
+          "withheld_balance_kobo": {
+            "default": 0,
+            "title": "Withheld Balance Kobo",
+            "type": "integer"
           }
         },
         "required": [
