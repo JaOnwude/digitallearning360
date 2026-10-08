@@ -5,6 +5,7 @@ from fastapi import APIRouter, Response, status
 from pydantic import BaseModel
 from sqlalchemy import text
 
+from app.auth.deps import SchoolAdmin
 from app.core.redis import get_redis
 from app.db.session import get_sessionmaker
 
@@ -42,3 +43,13 @@ async def readiness(response: Response) -> Readiness:
     if not ok:
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     return Readiness(status="ok" if ok else "degraded", database=db_ok, redis=redis_ok)
+
+
+class SentryTestError(RuntimeError):
+    """Deliberately unhandled, so Sentry records it (spec AC12)."""
+
+
+@router.post("/api/health/sentry-test", include_in_schema=False)
+async def sentry_test(_: SchoolAdmin) -> None:
+    """AC12: an admin triggers one backend error to prove Sentry receives it."""
+    raise SentryTestError("DigitalLearning360 Sentry test error (backend)")

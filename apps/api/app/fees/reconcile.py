@@ -19,6 +19,7 @@ from sqlalchemy import select
 
 from app.core.redis import get_redis
 from app.db.session import get_sessionmaker
+from app.fees import retention
 from app.fees import service as fees
 from app.fees.models import IntentStatus, PaymentIntent
 from app.fees.paystack import PaystackClient, get_paystack
@@ -128,6 +129,11 @@ async def run_forever() -> None:
             await run_once_locked()
         except Exception:
             log.exception("paystack.reconcile_failed")
+        try:  # housekeeping rides on the same timer (idempotent, so no lock needed)
+            if purged := await retention.purge_old_proof_files():
+                log.info("retention.proof_files_purged", count=purged)
+        except Exception:
+            log.exception("retention.purge_failed")
         await asyncio.sleep(INTERVAL_SECONDS)
 
 

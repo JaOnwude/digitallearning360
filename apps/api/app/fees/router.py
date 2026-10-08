@@ -501,6 +501,8 @@ async def proof_file(proof_id: uuid.UUID, p: CurrentPrincipal, db: TenantDB) -> 
     proof = await get_or_404(db, TransferProof, proof_id, "Proof")
     await readable_invoice(db, p, proof.invoice_id)  # bursar, or the family that uploaded it
     content = await db.scalar(select(TransferProof.file).where(TransferProof.id == proof.id))
+    if not content:  # deleted under the retention policy (fees/retention.py)
+        raise HTTPException(status.HTTP_410_GONE, "This receipt image was deleted after a year.")
     return Response(
         content,
         media_type=proof.content_type,

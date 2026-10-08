@@ -140,3 +140,25 @@ async def test_results_withheld_until_paid(
     row = (await parent.get("/api/portal/results")).json()[0]["results"][0]
     assert row["withheld"] is False and row["withheld_balance_kobo"] == 0
     assert row["average"] == "70.00"
+
+
+async def test_reviewed_proof_images_are_deleted_after_a_year(
+    fees_world: FeesWorld, client_for: ClientFactory
+) -> None:
+    """Retention (privacy notice): the image goes, the payment record stays."""
+    from datetime import UTC, datetime, timedelta
+
+    from app.fees.retention import purge_old_proof_files
+
+    parent, bursar = await fees_world.parent(client_for), fees_world.bursar
+    inv = fees_world.invoice_ids[0]
+    pending = await _upload(parent, inv, PNG, ref=None)
+    reviewed = await _upload(parent, inv, JPEG, ref=None)
+    await bursar.post(f"/api/fees/proofs/{reviewed['id']}/confirm", json={"amount_kobo": 100})
+
+    assert await purge_old_proof_files() == 0  # too recent
+    assert await purge_old_proof_files(now=datetime.now(UTC) + timedelta(days=366)) >= 1
+    assert (await bursar.get(f"/api/fees/proofs/{reviewed['id']}/file")).status_code == 410
+    assert (await bursar.get(f"/api/fees/proofs/{pending['id']}/file")).status_code == 200
+    detail = (await bursar.get(f"/api/fees/invoices/{inv}")).json()
+    assert detail["paid_kobo"] == 100

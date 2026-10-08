@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "api",
-      "runtimeExecutable": "uv",
-      "runtimeArgs": ["run", "--directory", "apps/api", "fastapi", "dev", "app/main.py", "--port", "8360"],
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev:api"],
       "port": 8360
     },
     {

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { SchoolLogo } from "@/components/school/school-logo";
 import { useSchool } from "@/components/school/school-context";
@@ -36,6 +37,9 @@ export function AuthFrame({ children }: { children: ReactNode }) {
           <p className="text-lg font-semibold text-balance">{school.name}</p>
         </div>
         <div className="w-full max-w-sm">{children}</div>
+        <Link href="/privacy" className="text-muted-foreground mt-10 text-xs underline-offset-4 hover:underline">
+          How we use your data
+        </Link>
       </main>
     </div>
   );

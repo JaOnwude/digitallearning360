@@ -29,15 +29,51 @@ export function proxy(request: NextRequest) {
     return NextResponse.rewrite(new URL(pathname + search, API_URL), { request: { headers } });
   }
 
+  // Pages get a per-request CSP nonce; Next applies it to its own scripts while rendering.
+  const csp = contentSecurityPolicy();
+  headers.set("content-security-policy", csp);
+
   const slug = slugFromHost(host);
-  if (slug === null) return NextResponse.next({ request: { headers } }); // marketing site
-  if (pathname.startsWith("/s/")) {
+  let response: NextResponse;
+  if (slug === null) {
+    response = NextResponse.next({ request: { headers } }); // marketing site
+  } else if (pathname.startsWith("/s/")) {
     // Internal paths are not addressable from the browser.
     return new NextResponse("Not found", { status: 404 });
+  } else {
+    const url = request.nextUrl.clone();
+    url.pathname = `/s/${slug}${pathname === "/" ? "" : pathname}`;
+    response = NextResponse.rewrite(url, { request: { headers } });
   }
-  const url = request.nextUrl.clone();
-  url.pathname = `/s/${slug}${pathname === "/" ? "" : pathname}`;
-  return NextResponse.rewrite(url, { request: { headers } });
+  response.headers.set("content-security-policy", csp);
+  return response;
+}
+
+const DEV = process.env.NODE_ENV === "development";
+// Browser error reports go straight to Sentry's ingest (spec R27), when configured.
+const SENTRY_ORIGIN = process.env.NEXT_PUBLIC_SENTRY_DSN ? new URL(process.env.NEXT_PUBLIC_SENTRY_DSN).origin : "";
+
+/**
+ * Scripts: only ours, via a fresh nonce (`strict-dynamic` lets them load their chunks).
+ * Styles allow inline because each school's brand colours are injected as a <style> block.
+ * API calls, PDFs, uploads and SSE are all same-origin through this proxy.
+ */
+function contentSecurityPolicy(): string {
+  const nonce = btoa(crypto.randomUUID());
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${DEV ? " 'unsafe-eval'" : ""}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' blob: data:",
+    "font-src 'self'",
+    `connect-src 'self'${SENTRY_ORIGIN ? ` ${SENTRY_ORIGIN}` : ""}${DEV ? " ws:" : ""}`,
+    "frame-src 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    ...(DEV ? [] : ["upgrade-insecure-requests"]),
+  ].join("; ");
 }
 
 export const config = {

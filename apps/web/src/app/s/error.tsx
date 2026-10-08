@@ -1,15 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { startTransition } from "react";
+import { startTransition, useEffect } from "react";
 import { RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { reportError } from "@/lib/report-error";
 
 /**
  * Shown when a school page can't load, most often because the API is down or still
  * waking up (free hosting sleeps when idle). Catches errors from app/s/[slug]/layout.tsx.
  */
-export default function SchoolError({ reset }: { error: Error; reset: () => void }) {
+export default function SchoolError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  useEffect(() => reportError(error, { source: "error-boundary", digest: error.digest ?? "" }), [error]);
   const router = useRouter();
   // The failure happened on the server, so re-request it there, then re-render.
   const retry = () =>
