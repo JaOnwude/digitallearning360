@@ -2,6 +2,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 import sentry_sdk
+import structlog
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 
@@ -10,7 +11,7 @@ from app.auth.router import router as auth_router
 from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.core.redis import close_redis
-from app.db.session import dispose_engine
+from app.db.session import database_role_problems, dispose_engine
 from app.fees import reconcile
 from app.fees.router import router as fees_router
 from app.fees.router_family import router as fees_family_router
@@ -34,7 +35,16 @@ def _operation_id(route: APIRoute) -> str:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    if get_settings().env == "test":
+    settings = get_settings()
+    if settings.env != "test" and (problems := await database_role_problems()):
+        message = (
+            "The API's database role can bypass tenant isolation: "
+            f"{'; '.join(problems)}. Connect as the restricted app role (see docs/ops.md)."
+        )
+        if settings.is_deployed:
+            raise RuntimeError(message)  # never serve schools without RLS (R1)
+        structlog.get_logger(__name__).warning("db.role_unsafe", detail=message)
+    if settings.env == "test":
         yield  # tests call reconcile() directly
     else:
         async with reconcile.background():

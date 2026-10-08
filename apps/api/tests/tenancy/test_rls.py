@@ -98,3 +98,20 @@ async def test_unknown_school_is_404(client_for: ClientFactory) -> None:
         "/api/auth/parent/code", json={"email": "p@example.com"}
     )
     assert res.status_code == 404
+
+
+async def test_app_role_cannot_bypass_rls_but_owner_is_flagged() -> None:
+    """The API refuses to start in staging/production on an unsafe role (main.lifespan)."""
+    import os
+
+    from sqlalchemy.ext.asyncio import create_async_engine
+
+    from app.db.session import database_role_problems
+
+    assert await database_role_problems() == []  # tests connect as dl360_app, like prod
+    owner = create_async_engine(os.environ["DL360_MIGRATION_DATABASE_URL"])
+    try:
+        problems = await database_role_problems(owner)
+    finally:
+        await owner.dispose()
+    assert any("superuser" in p for p in problems) and any("owns" in p for p in problems)

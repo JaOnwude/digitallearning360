@@ -1,5 +1,6 @@
 """Bursar / admin fee management (R19–R24)."""
 
+import asyncio
 import csv
 import io
 import uuid
@@ -452,12 +453,11 @@ async def invoice_document(
     invoice_id: uuid.UUID, p: CurrentPrincipal, school: CurrentSchool, db: TenantDB
 ) -> Response:
     detail = await fees.invoice_detail(db, school, await readable_invoice(db, p, invoice_id))
-    return _pdf(
-        invoice_pdf(
-            detail, school_name=school.name, address=school.address, logo=await _logo(db, school)
-        ),
-        f"invoice-{detail.reference}.pdf",
+    logo = await _logo(db, school)
+    content = await asyncio.to_thread(  # CPU-bound: keep the event loop free
+        invoice_pdf, detail, school_name=school.name, address=school.address, logo=logo
     )
+    return _pdf(content, f"invoice-{detail.reference}.pdf")
 
 
 @router.get("/receipts/{entry_id}.pdf", response_class=Response)
@@ -469,16 +469,11 @@ async def receipt_document(
     if entry.kind != EntryKind.PAYMENT:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Receipt not found")
     [out] = [e for e in detail.entries if e.id == entry.id]
-    return _pdf(
-        receipt_pdf(
-            detail,
-            out,
-            school_name=school.name,
-            address=school.address,
-            logo=await _logo(db, school),
-        ),
-        f"receipt-{entry.receipt_no}.pdf",
+    logo = await _logo(db, school)
+    content = await asyncio.to_thread(
+        receipt_pdf, detail, out, school_name=school.name, address=school.address, logo=logo
     )
+    return _pdf(content, f"receipt-{entry.receipt_no}.pdf")
 
 
 # ---------------------------------------------------------------- transfer proofs (bursar side)

@@ -1,5 +1,6 @@
 from collections.abc import AsyncIterator
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -41,3 +42,32 @@ async def get_session() -> AsyncIterator[AsyncSession]:
     """FastAPI dependency: one session per request, committed by the caller."""
     async with get_sessionmaker()() as session:
         yield session
+
+
+async def database_role_problems(engine: AsyncEngine | None = None) -> list[str]:
+    """Why the app's database role could defeat tenant isolation (spec R1), if it could.
+
+    Postgres row-level security is the last line between schools. It does nothing for a
+    superuser or a BYPASSRLS role, and a table owner can switch it off or ignore the ledger's
+    append-only grants. The app must connect as a restricted role (infra/postgres-init.sql);
+    migrations run separately as the owner (DL360_MIGRATION_DATABASE_URL).
+    """
+    async with (engine or get_engine()).connect() as conn:
+        row = (
+            await conn.execute(
+                text(
+                    "SELECT r.rolname, r.rolsuper, r.rolbypassrls,"
+                    " (SELECT count(*) FROM pg_tables t WHERE t.schemaname = 'public'"
+                    "  AND t.tableowner = r.rolname) AS owned"
+                    " FROM pg_roles r WHERE r.rolname = current_user"
+                )
+            )
+        ).one()
+    problems = []
+    if row.rolsuper:
+        problems.append(f"{row.rolname} is a superuser")
+    if row.rolbypassrls:
+        problems.append(f"{row.rolname} has BYPASSRLS")
+    if row.owned:
+        problems.append(f"{row.rolname} owns {row.owned} tables")
+    return problems

@@ -1,5 +1,6 @@
 """Report card PDFs, QR verification, the school crest, and the parent/student portal."""
 
+import asyncio
 import uuid
 from typing import Annotated
 
@@ -114,7 +115,9 @@ async def report_pdf(
     db: TenantDB,
 ) -> Response:
     snap = await _readable_snapshot(db, p, snapshot_id)
-    content = pdf.render(
+    # ReportLab is CPU-bound: render off the event loop so other requests keep flowing.
+    content = await asyncio.to_thread(
+        pdf.render,
         [(snap.data, _verify_url(request, snap), snap.sha256[:16])],
         await _logo(db, school),
         title=f"{snap.data['student']['name']} – {snap.data['term']['label']}",
@@ -158,7 +161,8 @@ async def arm_reports_pdf(
     )
     if not snaps:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "No published results for this class yet.")
-    content = pdf.render(
+    content = await asyncio.to_thread(
+        pdf.render,
         [(s.data, _verify_url(request, s), s.sha256[:16]) for s in snaps],
         await _logo(db, school),
         title=f"{snaps[0].data['student']['class_label']} – {snaps[0].data['term']['label']}",

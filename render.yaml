@@ -18,7 +18,11 @@ services:
     envVars:
       - key: DL360_ENV
         value: staging
-      - key: DL360_DATABASE_URL # Neon connection string (Frankfurt), pasted in the dashboard
+      - key: DL360_DATABASE_URL # Neon, as the restricted dl360_app role (RLS applies; see docs)
+        sync: false
+      - key: DL360_MIGRATION_DATABASE_URL # Neon owner: migrations only, at deploy
+        sync: false
+      - key: DL360_PAYSTACK_SECRET_KEY # sk_test_… on staging; the API refuses sk_live_ here
         sync: false
       - key: DL360_REDIS_URL
         fromService:
