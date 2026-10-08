@@ -508,6 +508,8 @@ async def proof_file(proof_id: uuid.UUID, p: CurrentPrincipal, db: TenantDB) -> 
             "Cache-Control": "private, no-store",
             "Content-Disposition": "inline",
             "X-Content-Type-Options": "nosniff",
+            # A parent's upload must never run script on the school's origin.
+            "Content-Security-Policy": "sandbox; default-src 'none'; img-src 'self'",
         },
     )
 
@@ -581,9 +583,16 @@ async def fee_summary(
     return await fees.summary(db, term, session.name)
 
 
+def _safe_cell(value: object) -> object:
+    """Stop spreadsheet formula injection: a name like `=HYPERLINK(...)` is text, not a formula."""
+    if isinstance(value, str) and value.startswith(("=", "+", "-", "@", "\t", "\r")):
+        return "'" + value
+    return value
+
+
 def _csv(rows: Sequence[Sequence[object]], name: str) -> Response:
     buf = io.StringIO()
-    csv.writer(buf).writerows(rows)
+    csv.writer(buf).writerows([_safe_cell(v) for v in row] for row in rows)
     return Response(
         "﻿" + buf.getvalue(),
         media_type="text/csv",  # BOM so Excel reads ₦ correctly
