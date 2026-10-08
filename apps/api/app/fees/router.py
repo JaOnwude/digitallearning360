@@ -6,6 +6,7 @@ import io
 import uuid
 from collections.abc import Sequence
 from datetime import UTC, datetime
+from decimal import Decimal
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Request, Response, status
@@ -580,6 +581,11 @@ async def fee_summary(
     return await fees.summary(db, term, session.name)
 
 
+def _ngn(kobo: int) -> Decimal:
+    """Exact naira for spreadsheets: 4500000 → 45000.00 (never a float)."""
+    return (Decimal(kobo) / 100).quantize(Decimal("0.01"))
+
+
 def _safe_cell(value: object) -> object:
     """Stop spreadsheet formula injection: a name like `=HYPERLINK(...)` is text, not a formula."""
     if isinstance(value, str) and value.startswith(("=", "+", "-", "@", "\t", "\r")):
@@ -613,7 +619,8 @@ async def export_debtors(_: FeeManager, db: TenantDB, term_id: uuid.UUID | None 
                 "Student",
                 "Admission no.",
                 "Class",
-                "Total (NGN)",
+                "Fees (NGN)",
+                "Waivers / charges (NGN)",
                 "Paid (NGN)",
                 "Balance (NGN)",
             ]
@@ -624,9 +631,11 @@ async def export_debtors(_: FeeManager, db: TenantDB, term_id: uuid.UUID | None 
                 r.student_name,
                 r.admission_no,
                 r.class_label or "",
-                r.total_kobo / 100,
-                r.paid_kobo / 100,
-                r.balance_kobo / 100,
+                _ngn(r.total_kobo),
+                # balance = fees + adjustments - payments (+ refunds), so the columns add up
+                _ngn(r.balance_kobo - r.total_kobo + r.paid_kobo),
+                _ngn(r.paid_kobo),
+                _ngn(r.balance_kobo),
             ]
             for r in owing
         ],
@@ -656,7 +665,7 @@ async def export_payments(
                 s.full_name,
                 e.kind.value,
                 e.source.value,
-                e.amount_kobo / 100,
+                _ngn(e.amount_kobo),
                 e.note or "",
             ]
             for e, ref, s in rows

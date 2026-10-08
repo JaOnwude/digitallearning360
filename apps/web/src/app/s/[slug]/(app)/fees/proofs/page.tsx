@@ -140,7 +140,8 @@ function ReviewDialog({ reviewing, onClose }: { reviewing: { proof: ProofOut; ac
     <Dialog open={reviewing !== null} onOpenChange={(o) => { if (!o) { setError(null); onClose(); } }}>
       <DialogContent>
         {proof && (
-          <form onSubmit={submit} className="grid gap-4">
+          // Keyed per proof and action, so the amount always starts from *this* proof's claim.
+          <form key={`${proof.id}-${reviewing.action}`} onSubmit={submit} className="grid gap-4">
             <DialogHeader>
               <DialogTitle>{reviewing.action === "confirm" ? "Confirm transfer" : "Reject proof"}</DialogTitle>
               <DialogDescription>

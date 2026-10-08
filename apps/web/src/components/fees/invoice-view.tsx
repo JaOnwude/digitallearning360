@@ -311,7 +311,8 @@ function ManageCard({ invoice, onChanged }: { invoice: InvoiceDetail; onChanged:
       </CardContent>
       <Dialog open={dialog !== null} onOpenChange={(o) => !o && setDialog(null)}>
         <DialogContent>
-          <form onSubmit={submit} className="grid gap-4">
+          {/* Keyed so each opening starts empty: a waiver's reason must never carry into a payment. */}
+          <form key={dialog ?? "closed"} onSubmit={submit} className="grid gap-4">
             <DialogHeader>
               <DialogTitle>{dialog === "payment" ? "Record a cash payment" : "Waiver or extra charge"}</DialogTitle>
               <DialogDescription>
