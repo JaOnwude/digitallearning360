@@ -71,3 +71,10 @@ traits = [
 [academic_session]
 name = "2026/2027"
 current_term = 1
+
+# Fees (spec: Pilot school profile). Only tuition is known so far; the bursar adds the rest
+# (PTA, uniform, ...) in the app. Amounts are in naira here; stored as kobo.
+[[fees]]
+name = "Tuition"
+amount_naira = 45000
+terms = [1, 2, 3]   # applies to every class level in every section

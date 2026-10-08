@@ -4,10 +4,10 @@
  * DigitalLearning360 API
  * OpenAPI spec version: 0.1.0
  */
-import type { TermOut } from './termOut';
+import type { AppAcademicsSchemasTermOut } from './appAcademicsSchemasTermOut';
 
 export interface SessionOut {
   id: string;
   name: string;
-  terms: TermOut[];
+  terms: AppAcademicsSchemasTermOut[];
 }

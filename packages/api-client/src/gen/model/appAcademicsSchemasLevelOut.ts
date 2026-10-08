@@ -6,7 +6,7 @@
  */
 import type { ArmOut } from './armOut';
 
-export interface LevelOut {
+export interface AppAcademicsSchemasLevelOut {
   arms: ArmOut[];
   id: string;
   name: string;

@@ -5,7 +5,7 @@ Every school-scoped endpoint depends on `TenantDB`: a session inside a transacti
 """
 
 import hmac
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
@@ -52,10 +52,25 @@ CurrentSchool = Annotated[School, Depends(get_school)]
 
 
 async def tenant_db(school: CurrentSchool) -> AsyncIterator[AsyncSession]:
-    """Per-request transaction scoped to the school; commits on success, rolls back on error."""
-    async with get_sessionmaker()() as db, db.begin():
-        await set_tenant(db, school)
-        yield db
+    """Per-request transaction scoped to the school; commits on success, rolls back on error.
+
+    Work queued with `after_commit` (e.g. live-update notifications) runs only once the
+    transaction has committed, so nobody is told about a change that then rolled back.
+    """
+    async with get_sessionmaker()() as db:
+        async with db.begin():
+            await set_tenant(db, school)
+            yield db
+        await run_after_commit(db)
+
+
+def after_commit(db: AsyncSession, callback: Callable[[], Awaitable[None]]) -> None:
+    db.info.setdefault("after_commit", []).append(callback)
+
+
+async def run_after_commit(db: AsyncSession) -> None:
+    for callback in db.info.pop("after_commit", []):
+        await callback()
 
 
 async def set_tenant(db: AsyncSession, school: School) -> None:

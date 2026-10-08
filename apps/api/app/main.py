@@ -11,7 +11,11 @@ from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.core.redis import close_redis
 from app.db.session import dispose_engine
+from app.fees.router import router as fees_router
+from app.fees.router_family import router as fees_family_router
+from app.fees.webhook import router as webhook_router
 from app.health.router import router as health_router
+from app.notifications.router import router as events_router
 from app.reports.router import router as reports_router
 from app.results.router_entry import router as results_entry_router
 from app.results.router_setup import router as results_setup_router
@@ -60,6 +64,10 @@ def create_app() -> FastAPI:
     app.include_router(results_entry_router)
     app.include_router(results_workflow_router)
     app.include_router(reports_router)
+    app.include_router(fees_family_router)  # before fees_router: /fees/mine vs /fees/invoices/{id}
+    app.include_router(fees_router)
+    app.include_router(webhook_router)
+    app.include_router(events_router)
     return app
 
 

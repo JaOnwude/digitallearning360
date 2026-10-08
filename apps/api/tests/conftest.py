@@ -46,6 +46,7 @@ def _infrastructure() -> Iterator[None]:
             DL360_BASE_DOMAIN=BASE_DOMAIN,
             DL360_PROXY_KEY=PROXY_KEY,
             DL360_DEFAULT_SCHOOL_SLUG="",
+            DL360_PAYSTACK_SECRET_KEY="sk_test_dl360_tests",  # fake client only; never called
         )
         from app.core.config import get_settings
 

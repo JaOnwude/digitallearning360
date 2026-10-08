@@ -11,8 +11,11 @@ from app.academics.models import AcademicSession, Arm, ClassLevel, Section, Term
 from app.auth.deps import Principal
 from app.auth.models import Membership, Role
 from app.db.helpers import get_or_404
+from app.fees import ledger
+from app.fees.models import Invoice
 from app.results.models import ResultSheet, SheetStatus, TeachingAssignment
 from app.students.models import Enrollment, Student
+from app.tenancy.models import School
 
 
 def forbidden(message: str = "You don't have access to this class.") -> HTTPException:
@@ -149,10 +152,15 @@ async def enrolled_students(db: AsyncSession, ctx: ArmContext) -> list[tuple[Enr
 
 
 async def is_withheld(db: AsyncSession, student_id: uuid.UUID, term_id: uuid.UUID) -> bool:
-    """R18: hide published results while fees are outstanding (when the school enables it).
-
-    Fees and invoices arrive in M3; until then nothing is ever withheld. M3 replaces this
-    body with: setting enabled AND invoice balance for (student, term) > 0.
-    """
-    del db, student_id, term_id
-    return False
+    """R18/AC6: hide published results while that term's invoice has any balance > ₦0,
+    when the school enables it (default on) and the student isn't exempted."""
+    invoice = await db.scalar(
+        select(Invoice).where(Invoice.student_id == student_id, Invoice.term_id == term_id)
+    )
+    if invoice is None or invoice.results_exempt:
+        return False
+    school = await db.get(School, invoice.school_id)
+    fees_cfg = ((school.settings if school else None) or {}).get("fees", {})
+    if not fees_cfg.get("withhold_results_for_debt", True):
+        return False
+    return await ledger.balance(db, invoice.id) > 0

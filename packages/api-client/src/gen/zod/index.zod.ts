@@ -1,4 +1,6 @@
 export * from './auth/auth.zod';
+export * from './events/events.zod';
+export * from './fees/fees.zod';
 export * from './health/health.zod';
 export * from './reports/reports.zod';
 export * from './results/results.zod';

@@ -10,6 +10,14 @@ from fastapi import FastAPI
 
 from app.academics.models import House, Subject
 from app.auth.models import Role
+from app.fees.models import (
+    EntryKind,
+    EntrySource,
+    Invoice,
+    LedgerEntry,
+    StudentDiscount,
+    TransferProof,
+)
 from app.results.models import ReportSnapshot, ResultSheet, SheetStatus
 from tests.conftest import ClientFactory
 from tests.factories import (
@@ -22,7 +30,7 @@ from tests.factories import (
 from tests.helpers import signed_in
 
 # (method, path template) → body. Path params are filled from school A's ids.
-CASES: dict[tuple[str, str], dict | list | None] = {
+CASES: dict[tuple[str, str], dict | list | str | None] = {
     ("PATCH", "/api/setup/sections/{section_id}"): {"display_name": "Hacked"},
     ("PATCH", "/api/setup/levels/{level_id}"): {"name": "Hacked"},
     ("PATCH", "/api/setup/terms/{term_id}"): {"starts_on": "2030-01-01"},
@@ -53,6 +61,19 @@ CASES: dict[tuple[str, str], dict | list | None] = {
     ("GET", "/api/reports/{snapshot_id}.pdf"): None,
     ("GET", "/api/reports/arm/{arm_id}.pdf"): None,
     ("GET", "/api/portal/snapshots/{snapshot_id}"): None,
+    # Fees (M3)
+    ("GET", "/api/fees/invoices/{invoice_id}"): None,
+    ("GET", "/api/fees/invoices/{invoice_id}/document.pdf"): None,
+    ("POST", "/api/fees/invoices/{invoice_id}/adjustments"): {"amount_kobo": -100, "note": "Hack"},
+    ("POST", "/api/fees/invoices/{invoice_id}/payments"): {"amount_kobo": 100},
+    ("PUT", "/api/fees/invoices/{invoice_id}/results-exempt"): {"exempt": True, "reason": "Hack"},
+    ("POST", "/api/fees/invoices/{invoice_id}/paystack"): None,
+    ("POST", "/api/fees/invoices/{invoice_id}/proofs"): "MULTIPART",
+    ("GET", "/api/fees/receipts/{entry_id}.pdf"): None,
+    ("GET", "/api/fees/proofs/{proof_id}/file"): None,
+    ("POST", "/api/fees/proofs/{proof_id}/confirm"): {"amount_kobo": 100},
+    ("POST", "/api/fees/proofs/{proof_id}/reject"): {"reason": "Not yours"},
+    ("DELETE", "/api/fees/discounts/{discount_id}"): None,
     # Public by design, but must not reveal another school's card: answers "not valid".
     ("GET", "/api/public/verify/{snapshot_id}"): None,
 }
@@ -100,6 +121,18 @@ async def test_school_b_cannot_touch_school_a(client_for: ClientFactory) -> None
             published_at=datetime.now(UTC),
         )  # fmt: skip
         db.add(snapshot)
+        invoice = Invoice(school_id=a.id, student_id=student.id, enrollment_id=w.enrollments[0].id,
+                          term_id=term.id, reference="A-2627-T1-00001", total_kobo=4_500_000)  # fmt: skip
+        db.add(invoice)
+        await db.flush()
+        entry = LedgerEntry(school_id=a.id, invoice_id=invoice.id, kind=EntryKind.PAYMENT, source=EntrySource.CASH,
+                            amount_kobo=100_000, receipt_no="RCT-A-1")  # fmt: skip
+        proof = TransferProof(school_id=a.id, invoice_id=invoice.id, claimed_amount_kobo=100_000, file=b"%PDF-1",
+                              content_type="application/pdf", sha256="d" * 64)  # fmt: skip
+        discount = StudentDiscount(
+            school_id=a.id, student_id=student.id, percent=10, reason="Sibling"
+        )
+        db.add_all([entry, proof, discount])
     ids = {
         "section_id": sa.section.id,
         "level_id": sa.level.id,
@@ -111,12 +144,24 @@ async def test_school_b_cannot_touch_school_a(client_for: ClientFactory) -> None
         "role": "teacher",
         "student_id": student.id,
         "snapshot_id": snapshot.id,
+        "invoice_id": invoice.id,
+        "entry_id": entry.id,
+        "proof_id": proof.id,
+        "discount_id": discount.id,
     }
     admin_b = await signed_in(client_for, b)
     for (method, path), body in CASES.items():
         url = path.format(**ids)
         params = {"h": snapshot.sha256[:16]} if "verify" in path else None
-        res = await admin_b.request(method, url, json=body, params=params)
+        if body == "MULTIPART":
+            res = await admin_b.request(
+                method,
+                url,
+                files={"file": ("r.pdf", b"%PDF-1", "application/pdf")},
+                data={"amount_kobo": "100"},
+            )
+        else:
+            res = await admin_b.request(method, url, json=body, params=params)
         expected = EXPECT.get((method, path), 404)
         assert res.status_code == expected, f"{method} {path} → {res.status_code} {res.text}"
         if "verify" in path:
@@ -144,3 +189,6 @@ async def test_school_b_cannot_touch_school_a(client_for: ClientFactory) -> None
     cfg = (await admin_a.get(f"/api/results/config/{sa.section.id}")).json()
     assert [c["max_score"] for c in cfg["components"]] == [10, 10, 10, 70]
     assert (await admin_a.get(f"/api/students/{student.id}")).json()["first_name"] == "Ada"
+    a_invoice = (await admin_a.get(f"/api/fees/invoices/{invoice.id}")).json()
+    assert a_invoice["balance_kobo"] == 4_400_000 and a_invoice["results_exempt"] is False
+    assert [p["status"] for p in a_invoice["proofs"]] == ["pending"]

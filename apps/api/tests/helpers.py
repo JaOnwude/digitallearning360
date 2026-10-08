@@ -23,3 +23,19 @@ async def signed_in(
         res = await c.post("/api/auth/totp/verify", json={"code": totp_now(secret)})
         assert res.json()["next"] == "done", res.text
     return c
+
+
+async def signed_in_parent(client_for: ClientFactory, school: School, email: str) -> AsyncClient:
+    """A client signed in as the parent with this email (via the emailed one-time code)."""
+    import re
+
+    from app.notifications.service import sent_messages
+
+    c = client_for(school.slug)
+    await c.post("/api/auth/parent/code", json={"email": email})
+    match = re.search(r"\b(\d{6})\b", sent_messages[-1]["text"])
+    assert match, "no code was emailed"
+    res = await c.post("/api/auth/parent/verify", json={"email": email, "code": match.group(1)})
+    assert res.status_code == 200, res.text
+    c.headers["x-csrf-token"] = c.cookies.get("dl360_csrf") or ""
+    return c

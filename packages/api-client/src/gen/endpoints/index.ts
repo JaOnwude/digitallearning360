@@ -1,4 +1,6 @@
 export * from './auth/auth';
+export * from './events/events';
+export * from './fees/fees';
 export * from './health/health';
 export * from './reports/reports';
 export * from './results/results';

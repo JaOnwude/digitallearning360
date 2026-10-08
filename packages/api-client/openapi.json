@@ -1,6 +1,28 @@
 {
   "components": {
     "schemas": {
+      "AdjustmentIn": {
+        "properties": {
+          "amount_kobo": {
+            "maximum": 10000000000.0,
+            "minimum": -10000000000.0,
+            "title": "Amount Kobo",
+            "type": "integer"
+          },
+          "note": {
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount_kobo",
+          "note"
+        ],
+        "title": "AdjustmentIn",
+        "type": "object"
+      },
       "ArmAssignmentsOut": {
         "properties": {
           "arm_id": {
@@ -203,6 +225,96 @@
           "max_score"
         ],
         "title": "BandIO",
+        "type": "object"
+      },
+      "BankDetails": {
+        "properties": {
+          "account_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Name"
+          },
+          "account_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Number"
+          },
+          "bank_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Name"
+          }
+        },
+        "required": [
+          "bank_name",
+          "account_name",
+          "account_number"
+        ],
+        "title": "BankDetails",
+        "type": "object"
+      },
+      "Body_fees_upload_proof": {
+        "properties": {
+          "amount_kobo": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 10000000000.0,
+            "title": "Amount Kobo",
+            "type": "integer"
+          },
+          "bank_reference": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Reference"
+          },
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "description": "Photo or PDF of the transfer receipt",
+            "title": "File",
+            "type": "string"
+          },
+          "paid_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paid On"
+          }
+        },
+        "required": [
+          "file",
+          "amount_kobo"
+        ],
+        "title": "Body_fees_upload_proof",
         "type": "object"
       },
       "Body_students_import_students": {
@@ -466,6 +578,29 @@
         "title": "BroadsheetSubject",
         "type": "object"
       },
+      "CheckoutOut": {
+        "properties": {
+          "amount_kobo": {
+            "title": "Amount Kobo",
+            "type": "integer"
+          },
+          "authorization_url": {
+            "title": "Authorization Url",
+            "type": "string"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          }
+        },
+        "required": [
+          "authorization_url",
+          "reference",
+          "amount_kobo"
+        ],
+        "title": "CheckoutOut",
+        "type": "object"
+      },
       "ChildResultsOut": {
         "properties": {
           "class_label": {
@@ -503,6 +638,39 @@
           "results"
         ],
         "title": "ChildResultsOut",
+        "type": "object"
+      },
+      "ClassSummary": {
+        "properties": {
+          "collected_kobo": {
+            "title": "Collected Kobo",
+            "type": "integer"
+          },
+          "expected_kobo": {
+            "title": "Expected Kobo",
+            "type": "integer"
+          },
+          "invoices": {
+            "title": "Invoices",
+            "type": "integer"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "outstanding_kobo": {
+            "title": "Outstanding Kobo",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "label",
+          "invoices",
+          "expected_kobo",
+          "collected_kobo",
+          "outstanding_kobo"
+        ],
+        "title": "ClassSummary",
         "type": "object"
       },
       "CommentAuthor": {
@@ -654,6 +822,473 @@
         "title": "ComponentOut",
         "type": "object"
       },
+      "DiscountIn": {
+        "properties": {
+          "fee_item_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fee Item Id"
+          },
+          "fixed_kobo": {
+            "anyOf": [
+              {
+                "maximum": 10000000000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixed Kobo"
+          },
+          "percent": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percent"
+          },
+          "reason": {
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Reason",
+            "type": "string"
+          },
+          "student_id": {
+            "format": "uuid",
+            "title": "Student Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "student_id",
+          "reason"
+        ],
+        "title": "DiscountIn",
+        "type": "object"
+      },
+      "DiscountOut": {
+        "properties": {
+          "fee_item_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fee Item Id"
+          },
+          "fee_item_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fee Item Name"
+          },
+          "fixed_kobo": {
+            "anyOf": [
+              {
+                "maximum": 10000000000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixed Kobo"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "percent": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percent"
+          },
+          "reason": {
+            "maxLength": 200,
+            "minLength": 3,
+            "title": "Reason",
+            "type": "string"
+          },
+          "student_id": {
+            "format": "uuid",
+            "title": "Student Id",
+            "type": "string"
+          },
+          "student_name": {
+            "title": "Student Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "student_id",
+          "reason",
+          "id",
+          "student_name",
+          "fee_item_name"
+        ],
+        "title": "DiscountOut",
+        "type": "object"
+      },
+      "EntryKind": {
+        "enum": [
+          "payment",
+          "refund",
+          "adjustment"
+        ],
+        "title": "EntryKind",
+        "type": "string"
+      },
+      "EntryOut": {
+        "properties": {
+          "amount_kobo": {
+            "title": "Amount Kobo",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/EntryKind"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "receipt_no": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receipt No"
+          },
+          "source": {
+            "$ref": "#/components/schemas/EntrySource"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "source",
+          "amount_kobo",
+          "receipt_no",
+          "note",
+          "created_at"
+        ],
+        "title": "EntryOut",
+        "type": "object"
+      },
+      "EntrySource": {
+        "enum": [
+          "paystack",
+          "transfer",
+          "cash",
+          "manual"
+        ],
+        "title": "EntrySource",
+        "type": "string"
+      },
+      "ExemptIn": {
+        "properties": {
+          "exempt": {
+            "title": "Exempt",
+            "type": "boolean"
+          },
+          "reason": {
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "exempt",
+          "reason"
+        ],
+        "title": "ExemptIn",
+        "type": "object"
+      },
+      "FamilyInvoices": {
+        "properties": {
+          "class_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Label"
+          },
+          "invoices": {
+            "items": {
+              "$ref": "#/components/schemas/InvoiceRow"
+            },
+            "title": "Invoices",
+            "type": "array"
+          },
+          "student_id": {
+            "format": "uuid",
+            "title": "Student Id",
+            "type": "string"
+          },
+          "student_name": {
+            "title": "Student Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "student_id",
+          "student_name",
+          "class_label",
+          "invoices"
+        ],
+        "title": "FamilyInvoices",
+        "type": "object"
+      },
+      "FeeItemIO": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "is_optional": {
+            "default": false,
+            "title": "Is Optional",
+            "type": "boolean"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "FeeItemIO",
+        "type": "object"
+      },
+      "FeeSettingsIO": {
+        "properties": {
+          "account_name": {
+            "anyOf": [
+              {
+                "maxLength": 150,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Name"
+          },
+          "account_number": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{10}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Number"
+          },
+          "bank_name": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Name"
+          },
+          "paystack_subaccount_code": {
+            "anyOf": [
+              {
+                "pattern": "^ACCT_[A-Za-z0-9]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paystack Subaccount Code"
+          },
+          "withhold_results_for_debt": {
+            "default": true,
+            "title": "Withhold Results For Debt",
+            "type": "boolean"
+          }
+        },
+        "title": "FeeSettingsIO",
+        "type": "object"
+      },
+      "FeeSetupOut": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FeeItemIO"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "levels": {
+            "items": {
+              "$ref": "#/components/schemas/app__fees__schemas__LevelOut"
+            },
+            "title": "Levels",
+            "type": "array"
+          },
+          "paystack_configured": {
+            "title": "Paystack Configured",
+            "type": "boolean"
+          },
+          "schedule": {
+            "items": {
+              "$ref": "#/components/schemas/ScheduleCell"
+            },
+            "title": "Schedule",
+            "type": "array"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/FeeSettingsIO"
+          },
+          "terms": {
+            "items": {
+              "$ref": "#/components/schemas/app__fees__schemas__TermOut"
+            },
+            "title": "Terms",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items",
+          "levels",
+          "terms",
+          "schedule",
+          "settings",
+          "paystack_configured"
+        ],
+        "title": "FeeSetupOut",
+        "type": "object"
+      },
+      "FeeSummaryOut": {
+        "properties": {
+          "classes": {
+            "items": {
+              "$ref": "#/components/schemas/ClassSummary"
+            },
+            "title": "Classes",
+            "type": "array"
+          },
+          "collected_kobo": {
+            "title": "Collected Kobo",
+            "type": "integer"
+          },
+          "expected_kobo": {
+            "title": "Expected Kobo",
+            "type": "integer"
+          },
+          "fully_paid": {
+            "title": "Fully Paid",
+            "type": "integer"
+          },
+          "invoices": {
+            "title": "Invoices",
+            "type": "integer"
+          },
+          "outstanding_kobo": {
+            "title": "Outstanding Kobo",
+            "type": "integer"
+          },
+          "pending_proofs": {
+            "title": "Pending Proofs",
+            "type": "integer"
+          },
+          "term_label": {
+            "title": "Term Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "term_label",
+          "expected_kobo",
+          "collected_kobo",
+          "outstanding_kobo",
+          "invoices",
+          "fully_paid",
+          "pending_proofs",
+          "classes"
+        ],
+        "title": "FeeSummaryOut",
+        "type": "object"
+      },
       "FormTeacherIn": {
         "properties": {
           "arm_id": {
@@ -688,6 +1323,62 @@
         ],
         "title": "Gender",
         "type": "string"
+      },
+      "GenerateIn": {
+        "properties": {
+          "class_level_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Level Ids"
+          },
+          "term_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Term Id"
+          }
+        },
+        "title": "GenerateIn",
+        "type": "object"
+      },
+      "GenerateOut": {
+        "properties": {
+          "already_invoiced": {
+            "title": "Already Invoiced",
+            "type": "integer"
+          },
+          "created": {
+            "title": "Created",
+            "type": "integer"
+          },
+          "no_schedule": {
+            "title": "No Schedule",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "created",
+          "already_invoiced",
+          "no_schedule"
+        ],
+        "title": "GenerateOut",
+        "type": "object"
       },
       "GuardianIn": {
         "properties": {
@@ -923,13 +1614,51 @@
         "title": "ImportResultOut",
         "type": "object"
       },
-      "LevelOut": {
+      "InvoiceDetail": {
         "properties": {
-          "arms": {
+          "admission_no": {
+            "title": "Admission No",
+            "type": "string"
+          },
+          "balance_kobo": {
+            "title": "Balance Kobo",
+            "type": "integer"
+          },
+          "bank": {
+            "$ref": "#/components/schemas/BankDetails"
+          },
+          "can_pay_online": {
+            "title": "Can Pay Online",
+            "type": "boolean"
+          },
+          "class_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Class Label"
+          },
+          "due_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due On"
+          },
+          "entries": {
             "items": {
-              "$ref": "#/components/schemas/ArmOut"
+              "$ref": "#/components/schemas/EntryOut"
             },
-            "title": "Arms",
+            "title": "Entries",
             "type": "array"
           },
           "id": {
@@ -937,44 +1666,178 @@
             "title": "Id",
             "type": "string"
           },
-          "name": {
-            "title": "Name",
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/LineOut"
+            },
+            "title": "Lines",
+            "type": "array"
+          },
+          "paid_kobo": {
+            "title": "Paid Kobo",
+            "type": "integer"
+          },
+          "pending_proofs": {
+            "title": "Pending Proofs",
+            "type": "integer"
+          },
+          "proofs": {
+            "items": {
+              "$ref": "#/components/schemas/ProofOut"
+            },
+            "title": "Proofs",
+            "type": "array"
+          },
+          "reference": {
+            "title": "Reference",
             "type": "string"
           },
-          "next_level_id": {
+          "results_exempt": {
+            "title": "Results Exempt",
+            "type": "boolean"
+          },
+          "student_id": {
+            "format": "uuid",
+            "title": "Student Id",
+            "type": "string"
+          },
+          "student_name": {
+            "title": "Student Name",
+            "type": "string"
+          },
+          "term_label": {
+            "title": "Term Label",
+            "type": "string"
+          },
+          "total_kobo": {
+            "title": "Total Kobo",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "reference",
+          "student_id",
+          "student_name",
+          "admission_no",
+          "class_label",
+          "term_label",
+          "total_kobo",
+          "paid_kobo",
+          "balance_kobo",
+          "pending_proofs",
+          "due_on",
+          "results_exempt",
+          "lines",
+          "entries",
+          "proofs",
+          "bank",
+          "can_pay_online"
+        ],
+        "title": "InvoiceDetail",
+        "type": "object"
+      },
+      "InvoicePage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/InvoiceRow"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size"
+        ],
+        "title": "InvoicePage",
+        "type": "object"
+      },
+      "InvoiceRow": {
+        "properties": {
+          "admission_no": {
+            "title": "Admission No",
+            "type": "string"
+          },
+          "balance_kobo": {
+            "title": "Balance Kobo",
+            "type": "integer"
+          },
+          "class_label": {
             "anyOf": [
               {
-                "format": "uuid",
                 "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Next Level Id"
+            "title": "Class Label"
           },
-          "sort": {
-            "title": "Sort",
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "paid_kobo": {
+            "title": "Paid Kobo",
             "type": "integer"
           },
-          "subject_ids": {
-            "items": {
-              "format": "uuid",
-              "type": "string"
-            },
-            "title": "Subject Ids",
-            "type": "array"
+          "pending_proofs": {
+            "title": "Pending Proofs",
+            "type": "integer"
+          },
+          "reference": {
+            "title": "Reference",
+            "type": "string"
+          },
+          "student_id": {
+            "format": "uuid",
+            "title": "Student Id",
+            "type": "string"
+          },
+          "student_name": {
+            "title": "Student Name",
+            "type": "string"
+          },
+          "term_label": {
+            "title": "Term Label",
+            "type": "string"
+          },
+          "total_kobo": {
+            "title": "Total Kobo",
+            "type": "integer"
           }
         },
         "required": [
           "id",
-          "name",
-          "sort",
-          "next_level_id",
-          "arms",
-          "subject_ids"
+          "reference",
+          "student_id",
+          "student_name",
+          "admission_no",
+          "class_label",
+          "term_label",
+          "total_kobo",
+          "paid_kobo",
+          "balance_kobo",
+          "pending_proofs"
         ],
-        "title": "LevelOut",
+        "title": "InvoiceRow",
         "type": "object"
       },
       "LevelUpdateIn": {
@@ -990,6 +1853,24 @@
           "name"
         ],
         "title": "LevelUpdateIn",
+        "type": "object"
+      },
+      "LineOut": {
+        "properties": {
+          "amount_kobo": {
+            "title": "Amount Kobo",
+            "type": "integer"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "amount_kobo"
+        ],
+        "title": "LineOut",
         "type": "object"
       },
       "Liveness": {
@@ -1165,6 +2046,26 @@
         "title": "MyClassesOut",
         "type": "object"
       },
+      "MyFeesOut": {
+        "properties": {
+          "bank": {
+            "$ref": "#/components/schemas/BankDetails"
+          },
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/FamilyInvoices"
+            },
+            "title": "Children",
+            "type": "array"
+          }
+        },
+        "required": [
+          "children",
+          "bank"
+        ],
+        "title": "MyFeesOut",
+        "type": "object"
+      },
       "NextStep": {
         "description": "What the web app should show after a login step.",
         "enum": [
@@ -1175,6 +2076,38 @@
         ],
         "title": "NextStep",
         "type": "string"
+      },
+      "OfficePaymentIn": {
+        "description": "Cash or other payment received at the school office.",
+        "properties": {
+          "amount_kobo": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 10000000000.0,
+            "title": "Amount Kobo",
+            "type": "integer"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "source": {
+            "$ref": "#/components/schemas/EntrySource",
+            "default": "cash"
+          }
+        },
+        "required": [
+          "amount_kobo"
+        ],
+        "title": "OfficePaymentIn",
+        "type": "object"
       },
       "ParentCodeIn": {
         "properties": {
@@ -1239,6 +2172,57 @@
         "title": "PasswordChangeIn",
         "type": "object"
       },
+      "PaymentResultOut": {
+        "properties": {
+          "balance_kobo": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Balance Kobo"
+          },
+          "invoice_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invoice Id"
+          },
+          "receipt_entry_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receipt Entry Id"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "invoice_id",
+          "balance_kobo",
+          "receipt_entry_id"
+        ],
+        "title": "PaymentResultOut",
+        "type": "object"
+      },
       "PersonOut": {
         "properties": {
           "full_name": {
@@ -1283,6 +2267,169 @@
         ],
         "title": "PromotionIn",
         "type": "object"
+      },
+      "ProofOut": {
+        "properties": {
+          "bank_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bank Reference"
+          },
+          "claimed_amount_kobo": {
+            "title": "Claimed Amount Kobo",
+            "type": "integer"
+          },
+          "confirmed_amount_kobo": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmed Amount Kobo"
+          },
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "duplicate_of": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duplicate Of"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "invoice_id": {
+            "format": "uuid",
+            "title": "Invoice Id",
+            "type": "string"
+          },
+          "invoice_reference": {
+            "title": "Invoice Reference",
+            "type": "string"
+          },
+          "paid_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paid On"
+          },
+          "review_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Note"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProofStatus"
+          },
+          "student_name": {
+            "title": "Student Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "invoice_id",
+          "invoice_reference",
+          "student_name",
+          "claimed_amount_kobo",
+          "bank_reference",
+          "paid_on",
+          "content_type",
+          "status",
+          "confirmed_amount_kobo",
+          "review_note",
+          "duplicate_of",
+          "created_at"
+        ],
+        "title": "ProofOut",
+        "type": "object"
+      },
+      "ProofRejectIn": {
+        "properties": {
+          "reason": {
+            "maxLength": 300,
+            "minLength": 5,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "ProofRejectIn",
+        "type": "object"
+      },
+      "ProofReviewIn": {
+        "properties": {
+          "amount_kobo": {
+            "exclusiveMinimum": 0.0,
+            "maximum": 10000000000.0,
+            "title": "Amount Kobo",
+            "type": "integer"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "required": [
+          "amount_kobo"
+        ],
+        "title": "ProofReviewIn",
+        "type": "object"
+      },
+      "ProofStatus": {
+        "enum": [
+          "pending",
+          "confirmed",
+          "rejected"
+        ],
+        "title": "ProofStatus",
+        "type": "string"
       },
       "PublicSchoolOut": {
         "description": "What anyone visiting the school's site may see (login page branding).",
@@ -1593,6 +2740,45 @@
         "title": "SavedOut",
         "type": "object"
       },
+      "ScheduleCell": {
+        "properties": {
+          "amount_kobo": {
+            "anyOf": [
+              {
+                "maximum": 10000000000.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Kobo"
+          },
+          "class_level_id": {
+            "format": "uuid",
+            "title": "Class Level Id",
+            "type": "string"
+          },
+          "fee_item_id": {
+            "format": "uuid",
+            "title": "Fee Item Id",
+            "type": "string"
+          },
+          "term_id": {
+            "format": "uuid",
+            "title": "Term Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fee_item_id",
+          "class_level_id",
+          "term_id"
+        ],
+        "title": "ScheduleCell",
+        "type": "object"
+      },
       "ScoreCellIn": {
         "properties": {
           "component_id": {
@@ -1792,7 +2978,7 @@
           },
           "levels": {
             "items": {
-              "$ref": "#/components/schemas/LevelOut"
+              "$ref": "#/components/schemas/app__academics__schemas__LevelOut"
             },
             "title": "Levels",
             "type": "array"
@@ -1942,7 +3128,7 @@
           },
           "terms": {
             "items": {
-              "$ref": "#/components/schemas/TermOut"
+              "$ref": "#/components/schemas/app__academics__schemas__TermOut"
             },
             "title": "Terms",
             "type": "array"
@@ -2967,69 +4153,6 @@
         "title": "SubjectTeacherIn",
         "type": "object"
       },
-      "TermOut": {
-        "properties": {
-          "ends_on": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ends On"
-          },
-          "id": {
-            "format": "uuid",
-            "title": "Id",
-            "type": "string"
-          },
-          "is_current": {
-            "title": "Is Current",
-            "type": "boolean"
-          },
-          "next_term_begins": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Next Term Begins"
-          },
-          "number": {
-            "title": "Number",
-            "type": "integer"
-          },
-          "starts_on": {
-            "anyOf": [
-              {
-                "format": "date",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Starts On"
-          }
-        },
-        "required": [
-          "id",
-          "number",
-          "starts_on",
-          "ends_on",
-          "next_term_begins",
-          "is_current"
-        ],
-        "title": "TermOut",
-        "type": "object"
-      },
       "TermUpdateIn": {
         "properties": {
           "ends_on": {
@@ -3250,6 +4373,21 @@
         "title": "ValidationError",
         "type": "object"
       },
+      "VerifyIn": {
+        "properties": {
+          "reference": {
+            "maxLength": 100,
+            "minLength": 6,
+            "title": "Reference",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reference"
+        ],
+        "title": "VerifyIn",
+        "type": "object"
+      },
       "VerifyOut": {
         "properties": {
           "class_label": {
@@ -3311,6 +4449,166 @@
           "school"
         ],
         "title": "VerifyOut",
+        "type": "object"
+      },
+      "app__academics__schemas__LevelOut": {
+        "properties": {
+          "arms": {
+            "items": {
+              "$ref": "#/components/schemas/ArmOut"
+            },
+            "title": "Arms",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "next_level_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Level Id"
+          },
+          "sort": {
+            "title": "Sort",
+            "type": "integer"
+          },
+          "subject_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Subject Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "sort",
+          "next_level_id",
+          "arms",
+          "subject_ids"
+        ],
+        "title": "LevelOut",
+        "type": "object"
+      },
+      "app__academics__schemas__TermOut": {
+        "properties": {
+          "ends_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ends On"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_current": {
+            "title": "Is Current",
+            "type": "boolean"
+          },
+          "next_term_begins": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Term Begins"
+          },
+          "number": {
+            "title": "Number",
+            "type": "integer"
+          },
+          "starts_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Starts On"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "starts_on",
+          "ends_on",
+          "next_term_begins",
+          "is_current"
+        ],
+        "title": "TermOut",
+        "type": "object"
+      },
+      "app__fees__schemas__LevelOut": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "LevelOut",
+        "type": "object"
+      },
+      "app__fees__schemas__TermOut": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "is_current": {
+            "title": "Is Current",
+            "type": "boolean"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "is_current"
+        ],
+        "title": "TermOut",
         "type": "object"
       }
     }
@@ -3620,6 +4918,1225 @@
         "summary": "Totp Verify",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/api/events": {
+      "get": {
+        "description": "Server-sent events for the signed-in user (R28). The browser re-fetches on each event.",
+        "operationId": "events_events",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Events",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/api/fees/discounts": {
+      "get": {
+        "operationId": "fees_list_discounts",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiscountOut"
+                  },
+                  "title": "Response Fees List Discounts",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Discounts",
+        "tags": [
+          "fees"
+        ]
+      },
+      "post": {
+        "operationId": "fees_add_discount",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiscountIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiscountOut"
+                  },
+                  "title": "Response Fees Add Discount",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Discount",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/discounts/{discount_id}": {
+      "delete": {
+        "operationId": "fees_remove_discount",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "discount_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Discount Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiscountOut"
+                  },
+                  "title": "Response Fees Remove Discount",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Discount",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/exports/debtors.csv": {
+      "get": {
+        "operationId": "fees_export_debtors",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "term_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Term Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Debtors",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/exports/payments.csv": {
+      "get": {
+        "operationId": "fees_export_payments",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "term_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Term Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Payments",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/invoices": {
+      "get": {
+        "operationId": "fees_list_invoices",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "term_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Term Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "arm_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Arm Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "owing",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Owing"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoicePage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Invoices",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/invoices/generate": {
+      "post": {
+        "operationId": "fees_generate_invoices",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Invoices",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/invoices/{invoice_id}": {
+      "get": {
+        "description": "Fee managers see any invoice; parents/students their own.",
+        "operationId": "fees_get_invoice",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invoice_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invoice Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Invoice",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/invoices/{invoice_id}/adjustments": {
+      "post": {
+        "description": "A waiver (negative) or extra charge (positive), with a reason. Lines never change.",
+        "operationId": "fees_add_adjustment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invoice_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invoice Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdjustmentIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Adjustment",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/invoices/{invoice_id}/document.pdf": {
+      "get": {
+        "operationId": "fees_invoice_document",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invoice_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invoice Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Invoice Document",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/invoices/{invoice_id}/payments": {
+      "post": {
+        "description": "Cash (or other) money received at the school office, with a receipt.",
+        "operationId": "fees_record_office_payment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invoice_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invoice Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfficePaymentIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Record Office Payment",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/invoices/{invoice_id}/paystack": {
+      "post": {
+        "description": "Paystack checkout for the full outstanding balance (decided: no part-payment online).",
+        "operationId": "fees_start_paystack",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invoice_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invoice Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Paystack",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/invoices/{invoice_id}/proofs": {
+      "post": {
+        "description": "R23: a parent's evidence of a bank transfer, for the bursar to confirm.",
+        "operationId": "fees_upload_proof",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invoice_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invoice Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_fees_upload_proof"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProofOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upload Proof",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/invoices/{invoice_id}/results-exempt": {
+      "put": {
+        "description": "R18: let a student's results show despite a balance (e.g. agreed payment plan).",
+        "operationId": "fees_set_results_exempt",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invoice_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invoice Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExemptIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set Results Exempt",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/items": {
+      "put": {
+        "operationId": "fees_put_items",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/FeeItemIO"
+                },
+                "title": "Body",
+                "type": "array"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeeSetupOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Items",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/mine": {
+      "get": {
+        "description": "A parent's children (or a student) with every invoice, newest first.",
+        "operationId": "fees_my_fees",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyFeesOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "My Fees",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/paystack/verify": {
+      "post": {
+        "description": "Called by the page Paystack returns the parent to. Applies the payment if the webhook\nhasn't already (both paths are idempotent).",
+        "operationId": "fees_verify_paystack",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResultOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Verify Paystack",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/proofs": {
+      "get": {
+        "operationId": "fees_list_proofs",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ProofStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "pending",
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProofOut"
+                  },
+                  "title": "Response Fees List Proofs",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Proofs",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/proofs/{proof_id}/confirm": {
+      "post": {
+        "description": "Record the amount that actually reached the school's account (AC9).",
+        "operationId": "fees_confirm_proof",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proof_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Proof Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProofReviewIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProofOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Confirm Proof",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/proofs/{proof_id}/file": {
+      "get": {
+        "operationId": "fees_proof_file",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proof_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Proof Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Proof File",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/proofs/{proof_id}/reject": {
+      "post": {
+        "operationId": "fees_reject_proof",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proof_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Proof Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProofRejectIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProofOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reject Proof",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/receipts/{entry_id}.pdf": {
+      "get": {
+        "operationId": "fees_receipt_document",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entry_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Entry Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Receipt Document",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/schedule": {
+      "put": {
+        "operationId": "fees_put_schedule",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "$ref": "#/components/schemas/ScheduleCell"
+                },
+                "title": "Body",
+                "type": "array"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeeSetupOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Schedule",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/settings": {
+      "put": {
+        "operationId": "fees_put_settings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeeSettingsIO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeeSetupOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Settings",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/setup": {
+      "get": {
+        "operationId": "fees_get_setup",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeeSetupOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Setup",
+        "tags": [
+          "fees"
+        ]
+      }
+    },
+    "/api/fees/summary": {
+      "get": {
+        "operationId": "fees_fee_summary",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "term_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Term Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeeSummaryOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Fee Summary",
+        "tags": [
+          "fees"
         ]
       }
     },

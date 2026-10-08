@@ -34,6 +34,7 @@ from app.academics.models import (
 from app.auth.models import Membership, Role, User
 from app.auth.passwords import hash_password
 from app.db.session import dispose_engine, get_sessionmaker
+from app.fees.models import FeeItem, FeeScheduleEntry
 from app.results import config as rconfig
 from app.results.config import BandSpec, ComponentSpec
 from app.results.models import AssessmentComponent, CommentAuthor
@@ -99,7 +100,8 @@ async def seed(
         school.motto = s.get("motto")
         school.address = s.get("address")
         school.branding = s.get("branding", {})
-        school.settings = s.get("settings", {})
+        # Merge, never replace: settings edited in the app (bank details…) survive re-seeding.
+        school.settings = {**(school.settings or {}), **s.get("settings", {})}
         if "logo_file" in s:
             logo = (base_dir / s["logo_file"]).resolve()
             school.logo = logo.read_bytes()
@@ -171,6 +173,33 @@ async def seed(
                         academic_session_id=session.id,
                         name=arm,
                     )
+
+        # Fees: one schedule amount per item × every level × listed terms (kobo in the DB).
+        terms_by_number = {
+            t.number: t
+            for t in await db.scalars(select(Term).where(Term.academic_session_id == session.id))
+        }
+        all_levels = [lv for sec in config.get("sections", []) for lv in sec["_levels"]]
+        for sort, fee in enumerate(config.get("fees", [])):
+            item = await _get_or_create(
+                db, FeeItem, {"sort": sort}, school_id=sid, name=fee["name"]
+            )
+            for number in fee.get("terms", [1, 2, 3]):
+                for level in all_levels:
+                    await _get_or_create(
+                        db,
+                        FeeScheduleEntry,
+                        {"amount_kobo": int(fee["amount_naira"] * 100)},
+                        school_id=sid,
+                        fee_item_id=item.id,
+                        class_level_id=level.id,
+                        term_id=terms_by_number[number].id,
+                    )
+        if "fees" in config and "fees" not in (school.settings or {}):
+            school.settings = {
+                **(school.settings or {}),
+                "fees": {"withhold_results_for_debt": True},
+            }
 
         temp_password = None
         if admin_email:

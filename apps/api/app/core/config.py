@@ -57,6 +57,10 @@ class Settings(BaseSettings):
     # 32-byte key, base64url. Encrypts TOTP secrets and other sensitive fields.
     encryption_key: SecretStr = SecretStr("ZGV2LW9ubHktZW5jcnlwdGlvbi1rZXktMzJieXRlcyE=")
 
+    # Paystack secret key: sk_test_… locally/staging, sk_live_… in production only.
+    paystack_secret_key: SecretStr | None = None
+    paystack_base_url: str = "https://api.paystack.co"
+
     resend_api_key: SecretStr | None = None
     email_from: str = "DigitalLearning360 <no-reply@digitallearning360.localhost>"
 
@@ -84,6 +88,12 @@ class Settings(BaseSettings):
             for name, dev_value in insecure.items():
                 if getattr(self, name).get_secret_value() == dev_value:
                     raise ValueError(f"DL360_{name.upper()} must be set in {self.env}")
+        # Real money only moves in production; test money never does.
+        key = self.paystack_secret_key.get_secret_value() if self.paystack_secret_key else ""
+        if self.env == "production" and key.startswith("sk_test_"):
+            raise ValueError("Production must use a live Paystack key (sk_live_…)")
+        if self.env != "production" and key.startswith("sk_live_"):
+            raise ValueError(f"A live Paystack key must never be used in {self.env}")
 
 
 @lru_cache
