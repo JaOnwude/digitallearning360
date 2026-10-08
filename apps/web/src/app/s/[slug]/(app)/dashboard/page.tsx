@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, GraduationCap, Settings2, Users } from "lucide-react";
+import { BookOpen, ChevronRight, GraduationCap, Settings2, Users, Wallet } from "lucide-react";
 import { PortalResults } from "@/components/results/portal-results";
 import { useMe } from "@/components/shell/me-context";
 import { useSchool } from "@/components/school/school-context";
@@ -9,6 +9,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 
 const STAFF_LINKS = [
   { href: "/classes", title: "My classes", body: "Enter scores, rate students, approve results.", icon: BookOpen, roles: ["teacher", "section_head", "counsellor", "school_admin"] },
+  { href: "/fees", title: "Fees", body: "Collections, invoices and transfer proofs to confirm.", icon: Wallet, roles: ["bursar", "school_admin"] },
   { href: "/students", title: "Students & parents", body: "Records, CSV import and sign-in slips.", icon: GraduationCap, roles: ["school_admin"] },
   { href: "/staff", title: "Staff", body: "Accounts and roles.", icon: Users, roles: ["school_admin"] },
   { href: "/setup", title: "School setup", body: "Classes, terms, subjects, teaching and results settings.", icon: Settings2, roles: ["school_admin"] },
@@ -51,6 +52,11 @@ export default function DashboardPage() {
         </div>
       ) : (
         <section className="grid gap-3">
+          <Link href="/fees" className="hover:border-brand flex min-h-14 items-center gap-3 rounded-lg border p-3 transition-colors">
+            <Wallet className="text-brand-ink size-5" />
+            <span className="flex-1 font-medium">School fees: invoices, payment and receipts</span>
+            <ChevronRight className="text-muted-foreground size-4" />
+          </Link>
           <h2 className="text-lg font-semibold">{me.kind === "parent" ? "Your children's results" : "Your results"}</h2>
           <PortalResults isParent={me.kind === "parent"} />
         </section>

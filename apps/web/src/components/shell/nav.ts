@@ -1,12 +1,13 @@
 import type { Role } from "@dl360/api-client";
-import { BookOpen, GraduationCap, LayoutDashboard, Settings2, Users, type LucideIcon } from "lucide-react";
+import { BookOpen, GraduationCap, LayoutDashboard, Settings2, Users, Wallet, type LucideIcon } from "lucide-react";
 
 export type NavItem = { href: string; label: string; icon: LucideIcon; roles: Role[] | "all" };
 
-/** Sidebar entries. Each feature adds its pages here as it ships (M1: setup, students, staff). */
+/** Sidebar entries. Each feature adds its pages here as it ships (M1: setup, students, staff; M3: fees). */
 export const NAV: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: "all" },
   { href: "/classes", label: "My classes", icon: BookOpen, roles: ["teacher", "section_head", "counsellor", "school_admin"] },
+  { href: "/fees", label: "Fees", icon: Wallet, roles: ["bursar", "school_admin", "parent", "student"] },
   { href: "/students", label: "Students", icon: GraduationCap, roles: ["school_admin"] },
   { href: "/staff", label: "Staff", icon: Users, roles: ["school_admin"] },
   { href: "/setup", label: "School setup", icon: Settings2, roles: ["school_admin"] },

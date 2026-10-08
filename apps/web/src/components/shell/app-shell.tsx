@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLiveUpdates } from "@/lib/live-updates";
 import { cn } from "@/lib/utils";
 import { navFor, ROLE_LABEL } from "./nav";
 import { MeProvider } from "./me-context";
@@ -28,6 +29,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const me = useAuthMe({ query: { retry: false } });
   const user = me.data?.data;
+  useLiveUpdates(user?.next === "done");
 
   useEffect(() => {
     if (me.error instanceof ApiError && me.error.status === 401) router.replace("/login");
